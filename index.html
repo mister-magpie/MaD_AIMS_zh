@@ -60,7 +60,7 @@
         <script>
             // load the data json file on page load
             dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json`
-            data = fetch(dataurl)
+            data = await fetch(dataurl)
                 .then(response => response.json())
                 .then(jsonData => {
                     console.log("Data loaded:", jsonData);
@@ -173,6 +173,7 @@
                 graphLayout['responsive'] = true;
                 // graphLayout['height'] = 900;
                 // graphLayout['width'] = 1600;
+                graphLayout['showlegend'] = true;
                 graphLayout['legend'] = { 'orientation': 'v' };
                 // if (plotType == "lyrics") {
                 //     graphLayout['legend'] = false;
