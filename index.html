@@ -71,21 +71,36 @@
                     return null;
                 });
             if (data) {
-                // create two dropdown inside of #infoDiv 
-                // one with the column names from the data
-                // one with value of the column "hdb_label"
-                for (const columnName of Object.keys(data[0])) {
+                // create a dropdown inside infoDiv to select a column of data
+                const dropdown = document.createElement('select');
+                dropdown.className = 'form-select';
+                dropdown.id = 'dataColumnSelect';
+
+                // Populate dropdown with keys from the data
+                Object.keys(data[0]).forEach(key => {
                     const option = document.createElement('option');
-                    option.value = columnName;
-                    option.text = columnName;
-                    document.getElementById('infoDiv').appendChild(option);
-                }
-                for (const row of data) {
+                    option.value = key;
+                    option.textContent = key;
+                    dropdown.appendChild(option);
+                });
+
+                // Add dropdown to infoDiv
+                document.getElementById('infoDiv').appendChild(dropdown);
+
+                // create a dropdown inside infoDiv to select a cluster
+                const clusterDropdown = document.createElement('select');
+                clusterDropdown.className = 'form-select mt-2';
+                clusterDropdown.id = 'clusterSelect';
+                document.getElementById('infoDiv').appendChild(clusterDropdown);
+
+                // Populate cluster dropdown with unique cluster labels
+                const uniqueClusters = [...new Set(data.map(item => item.hdb_label))];
+                uniqueClusters.forEach(cluster => {
                     const option = document.createElement('option');
-                    option.value = row['hdb_label'];
-                    option.text = row['hdb_label'];
-                    document.getElementById('infoDiv').appendChild(option);
-                }
+                    option.value = cluster;
+                    option.textContent = cluster;
+                    clusterDropdown.appendChild(option);
+                });
             }
 
         </script>
