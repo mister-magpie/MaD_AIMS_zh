@@ -121,26 +121,29 @@
                 var graphData = plotJson.data;
                 var graphLayout = plotJson.layout;
                 graphLayout['autosize'] = true;
-                graphLayout['height'] = 900;
-                graphLayout['width'] = 1600;
+                graphLayout['responsive'] = true;
+                // graphLayout['height'] = 900;
+                // graphLayout['width'] = 1600;
                 graphLayout['legend'] = { 'orientation': 'v' };
-                Plotly.newPlot('plotDiv', graphData, graphLayout);
+                if (plotType == "lyrics") {
+                    graphLayout['legend'] = false;
+                    Plotly.newPlot('plotDiv', graphData, graphLayout);
 
-                document.getElementById("plotDiv").on('plotly_click', function (clickData) {
-                    if (currentPlot == 'tags') return;
-                    let songID = clickData.points[0].customdata[0];
-                    let source = clickData.points[0].customdata[1];
-                    if (source == 'suno') {
-                        let link = `https://${source}.com/song/${songID}`;
-                        window.open(link, '_blank');
-                    } else if (source == 'udio') {
-                        let link = `https://${source}.com/songs/${songID}`;
-                        window.open(link, '_blank');
-                    } else {
-                        alert("error with link", clickData);
-                    }
-                });
-            }
+                    document.getElementById("plotDiv").on('plotly_click', function (clickData) {
+                        if (currentPlot == 'tags') return;
+                        let songID = clickData.points[0].customdata[0];
+                        let source = clickData.points[0].customdata[1];
+                        if (source == 'suno') {
+                            let link = `https://${source}.com/song/${songID}`;
+                            window.open(link, '_blank');
+                        } else if (source == 'udio') {
+                            let link = `https://${source}.com/songs/${songID}`;
+                            window.open(link, '_blank');
+                        } else {
+                            alert("error with link", clickData);
+                        }
+                    });
+                }
 
 
         </script>
