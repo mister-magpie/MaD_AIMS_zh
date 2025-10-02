@@ -53,50 +53,45 @@
                 plotType.addEventListener('change', function () {
                     let plotTypeValue = plotType.value;
                     currentPlot = plotTypeValue;
-                    if (currentPlot == 'lyrics') return createPlot('zh_songs_lyrics');
-                    else if (currentPlot == 'tagscat') return createPlot('zh_songs_tags_cat');
-                    else if (currentPlot == 'tags100') return createPlot('zh_songs_tags_100');
-                    else
-                        createPlot(plotTypeValue);
+                    createPlot(plotTypeValue);
                 });
-            });
 
-            // Initial plot on page load
-            window.addEventListener('DOMContentLoaded', function () {
-                let checked = document.querySelector('input[name="plotType"]:checked').value;
-                console.log('Initial plot', checked);
-                if (checked) {
-                    createPlot(checked.value);
-                }
-            });
-
-            async function createPlot(plotType) {
-                console.log('create plot', plotType);
-                let plotFile;
-                if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
-                else if (plotType == 'tagscat') plotFile = 'zh_songs_lyrics';
-                else if (plotType == 'tags100') plotFile = 'zh_songs_lyrics';
-                else plotFile = null;
-                // The filename is just the plotType
-                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
-                    .then(response => response.json())
-                    .catch(error => { console.error(error); return null; });
-                if (!plotJson) {
-                    // Create toast container if it doesn't exist
-                    if (!document.getElementById('toastContainer')) {
-                        const toastContainer = document.createElement('div');
-                        toastContainer.id = 'toastContainer';
-                        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
-                        toastContainer.style.zIndex = 1080;
-                        document.body.appendChild(toastContainer);
+                // Initial plot on page load
+                window.addEventListener('DOMContentLoaded', function () {
+                    let checked = document.querySelector('input[name="plotType"]:checked').value;
+                    console.log('Initial plot', checked);
+                    if (checked) {
+                        createPlot(checked.value);
                     }
-                    // Create toast element
-                    const toast = document.createElement('div');
-                    toast.className = 'toast align-items-center text-bg-danger border-0 show';
-                    toast.setAttribute('role', 'alert');
-                    toast.setAttribute('aria-live', 'assertive');
-                    toast.setAttribute('aria-atomic', 'true');
-                    toast.innerHTML = `
+                });
+
+                async function createPlot(plotType) {
+                    console.log('create plot', plotType);
+                    let plotFile;
+                    if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
+                    else if (plotType == 'tagscat') plotFile = 'zh_songs_lyrics';
+                    else if (plotType == 'tags100') plotFile = 'zh_songs_lyrics';
+                    else plotFile = null;
+                    // The filename is just the plotType
+                    let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
+                        .then(response => response.json())
+                        .catch(error => { console.error(error); return null; });
+                    if (!plotJson) {
+                        // Create toast container if it doesn't exist
+                        if (!document.getElementById('toastContainer')) {
+                            const toastContainer = document.createElement('div');
+                            toastContainer.id = 'toastContainer';
+                            toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                            toastContainer.style.zIndex = 1080;
+                            document.body.appendChild(toastContainer);
+                        }
+                        // Create toast element
+                        const toast = document.createElement('div');
+                        toast.className = 'toast align-items-center text-bg-danger border-0 show';
+                        toast.setAttribute('role', 'alert');
+                        toast.setAttribute('aria-live', 'assertive');
+                        toast.setAttribute('aria-atomic', 'true');
+                        toast.innerHTML = `
                         <div class="d-flex">
                             <div class="toast-body">
                                 Plot data not found.
@@ -104,35 +99,36 @@
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     `;
-                    document.getElementById('toastContainer').appendChild(toast);
-                    // Initialize and show the toast using Bootstrap's JS
-                    if (window.bootstrap && bootstrap.Toast) {
-                        new bootstrap.Toast(toast, { delay: 4000 }).show();
+                        document.getElementById('toastContainer').appendChild(toast);
+                        // Initialize and show the toast using Bootstrap's JS
+                        if (window.bootstrap && bootstrap.Toast) {
+                            new bootstrap.Toast(toast, { delay: 4000 }).show();
+                        }
+                        return;
                     }
-                    return;
-                }
-                var graphData = plotJson.data;
-                var graphLayout = plotJson.layout;
-                graphLayout['autosize'] = true;
-                graphLayout['height'] = 1080;
-                graphLayout['width'] = 1920;
-                Plotly.newPlot('plotDiv', graphData, graphLayout);
+                    var graphData = plotJson.data;
+                    var graphLayout = plotJson.layout;
+                    graphLayout['autosize'] = true;
+                    graphLayout['height'] = 1080;
+                    graphLayout['width'] = 1920;
+                    graphLayout['legend'] = { 'orientation': 'h' };
+                    Plotly.newPlot('plotDiv', graphData, graphLayout);
 
-                document.getElementById("plotDiv").on('plotly_click', function (clickData) {
-                    if (currentPlot == 'tags') return;
-                    let songID = clickData.points[0].customdata[0];
-                    let source = clickData.points[0].customdata[1];
-                    if (source == 'suno') {
-                        let link = `https://${source}.com/song/${songID}`;
-                        window.open(link, '_blank');
-                    } else if (source == 'udio') {
-                        let link = `https://${source}.com/songs/${songID}`;
-                        window.open(link, '_blank');
-                    } else {
-                        alert("error with link", clickData);
-                    }
-                });
-            }
+                    document.getElementById("plotDiv").on('plotly_click', function (clickData) {
+                        if (currentPlot == 'tags') return;
+                        let songID = clickData.points[0].customdata[0];
+                        let source = clickData.points[0].customdata[1];
+                        if (source == 'suno') {
+                            let link = `https://${source}.com/song/${songID}`;
+                            window.open(link, '_blank');
+                        } else if (source == 'udio') {
+                            let link = `https://${source}.com/songs/${songID}`;
+                            window.open(link, '_blank');
+                        } else {
+                            alert("error with link", clickData);
+                        }
+                    });
+                }
 
 
         </script>
