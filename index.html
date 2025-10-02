@@ -31,21 +31,20 @@
                         Click on points in the scatter plots to open the corresponding song in a new tab.
                     </p>
                     <hr>
-                </div>
+                    <!-- button for selecting which plot to visualize among: lyrics, tags categories and top 100 tags-->
+                    <div class="btn-group" role="group" aria-label="Plot Type">
+                        <input type="radio" class="btn-check" name="plotType" id="plotType_lyrics" autocomplete="off"
+                            value="lyrics" checked>
+                        <label class="btn btn-outline-primary" for="plotType_lyrics">Lyrics</label>
 
-                <!-- button for selecting which plot to visualize among: lyrics, tags categories and top 100 tags-->
-                <div class="btn-group" role="group" aria-label="Plot Type">
-                    <input type="radio" class="btn-check" name="plotType" id="plotType_lyrics" autocomplete="off"
-                        value="lyrics" checked>
-                    <label class="btn btn-outline-primary" for="plotType_lyrics">Lyrics</label>
+                        <input type="radio" class="btn-check" name="plotType" id="plotType_tags" autocomplete="off"
+                            value="tagscat">
+                        <label class="btn btn-outline-primary" for="plotType_tags">Tags Categories</label>
 
-                    <input type="radio" class="btn-check" name="plotType" id="plotType_tags" autocomplete="off"
-                        value="tagscat">
-                    <label class="btn btn-outline-primary" for="plotType_tags">Tags Categories</label>
-
-                    <input type="radio" class="btn-check" name="plotType" id="plotType_prompt" autocomplete="off"
-                        value="tags100">
-                    <label class="btn btn-outline-primary" for="plotType_prompt">Top 100 Tags</label>
+                        <input type="radio" class="btn-check" name="plotType" id="plotType_prompt" autocomplete="off"
+                            value="tags100">
+                        <label class="btn btn-outline-primary" for="plotType_prompt">Top 100 Tags</label>
+                    </div>
                     <hr>
                 </div>
                 <div class="col-12">
