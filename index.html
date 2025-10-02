@@ -73,7 +73,7 @@
                 console.log('create plot', plotType);
                 currentPlot = plotType;
                 // The filename is just the plotType
-                let plotJson = await fetch(`https://mister-magpie.github.io/aims_prompts/plots/${plotType}.json`)
+                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotType}.json`)
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 if (!plotJson) {
