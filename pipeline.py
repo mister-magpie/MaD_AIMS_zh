@@ -4,7 +4,7 @@ import re
 import numpy as np
 
 try:
-    zh_songs = pd.read_pickle("./zh_songs_v2.pkl")
+    zh_songs = pd.read_pickle("./zh_songs.pkl")
     print(f"chinese songs: {len(zh_songs)}")
 except FileNotFoundError:
     print("creating the dataframe")
@@ -307,7 +307,7 @@ if "qwen_hdb_name" not in zh_songs.columns:
         qwen_hdb_names = pd.DataFrame(qwen_hdb_names)
         zh_songs = zh_songs.merge(qwen_hdb_names, on='hdb_label', how='left')
 
-    zh_songs.to_pickle("zh_songs_v2.pkl")
+    zh_songs.to_pickle("zh_songs.pkl")
 
 #%% translate the label
 # if "translated_qwen_hdb_name" not in zh_songs.columns:
