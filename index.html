@@ -59,17 +59,24 @@
 
         <script>
             // load the data json file on page load
-            dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json`
-            data = await fetch(dataurl)
-                .then(response => response.json())
-                .then(jsonData => {
-                    console.log("Data loaded:", jsonData);
-                    return jsonData;
-                })
-                .catch(error => {
-                    console.error("Error loading data:", error);
-                    return null;
-                });
+            async function loadData() {
+                // dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json` --- IGNORE ---
+                let dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json`;
+                let data = await fetch(dataurl)
+                    .then(response => response.json())
+                    .then(jsonData => {
+                        console.log("Data loaded:", jsonData);
+                        return jsonData;
+                    })
+                    .catch(error => {
+                        console.error("Error loading data:", error);
+                        return null;
+                    });
+                return data;
+            }
+
+
+            data = await loadData();
             if (data) {
                 // create a dropdown inside infoDiv to select a column of data
                 const dropdown = document.createElement('select');
