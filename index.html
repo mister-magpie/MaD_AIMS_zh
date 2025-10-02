@@ -30,11 +30,11 @@
                     <label class="btn btn-outline-primary" for="plotType_lyrics">Lyrics</label>
 
                     <input type="radio" class="btn-check" name="plotType" id="plotType_tags" autocomplete="off"
-                        value="tags">
+                        value="tagscat">
                     <label class="btn btn-outline-primary" for="plotType_tags">Tags Categories</label>
 
                     <input type="radio" class="btn-check" name="plotType" id="plotType_prompt" autocomplete="off"
-                        value="prompt">
+                        value="tags100">
                     <label class="btn btn-outline-primary" for="plotType_prompt">Top 100 Tags</label>
                 </div>
                 <div class="col-12">
@@ -52,7 +52,11 @@
                 plotType.addEventListener('change', function () {
                     let plotTypeValue = plotType.value;
                     currentPlot = plotTypeValue;
-                    createPlot(plotTypeValue);
+                    if (currentPlot == 'lyrics') return createPlot('zh_songs_lyrics');
+                    else if (currentPlot == 'tagscat') return createPlot('zh_songs_tags_cat');
+                    else if (currentPlot == 'tags100') return createPlot('zh_songs_tags_100');
+                    else
+                        createPlot(plotTypeValue);
                 });
             });
 
@@ -68,7 +72,7 @@
                 console.log('create plot', plotType);
                 currentPlot = plotType;
                 // The filename is just the plotType
-                let plotJson = await fetch(`plots/${plotType}.json`)
+                let plotJson = await fetch(`https://mister-magpie.github.io/aims_prompts/plots/${plotType}.json`)
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 if (!plotJson) {
