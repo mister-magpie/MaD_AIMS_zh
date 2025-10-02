@@ -125,23 +125,25 @@
                 graphLayout['legend'] = { 'orientation': 'v' };
                 if (plotType == "lyrics") {
                     graphLayout['legend'] = false;
-                    Plotly.newPlot('plotDiv', graphData, graphLayout);
-
-                    document.getElementById("plotDiv").on('plotly_click', function (clickData) {
-                        if (currentPlot == 'tags') return;
-                        let songID = clickData.points[0].customdata[0];
-                        let source = clickData.points[0].customdata[1];
-                        if (source == 'suno') {
-                            let link = `https://${source}.com/song/${songID}`;
-                            window.open(link, '_blank');
-                        } else if (source == 'udio') {
-                            let link = `https://${source}.com/songs/${songID}`;
-                            window.open(link, '_blank');
-                        } else {
-                            alert("error with link", clickData);
-                        }
-                    });
                 }
+                Plotly.newPlot('plotDiv', graphData, graphLayout);
+
+                document.getElementById("plotDiv").on('plotly_click', function (clickData) {
+                    if (currentPlot == 'tags') return;
+                    let songID = clickData.points[0].customdata[0];
+                    let source = clickData.points[0].customdata[1];
+                    if (source == 'suno') {
+                        let link = `https://${source}.com/song/${songID}`;
+                        window.open(link, '_blank');
+                    } else if (source == 'udio') {
+                        let link = `https://${source}.com/songs/${songID}`;
+                        window.open(link, '_blank');
+                    } else {
+                        alert("error with link", clickData);
+                    }
+                });
+            }
+
 
 
         </script>
