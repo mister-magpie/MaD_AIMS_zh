@@ -1,0 +1,547 @@
+﻿tag,tag_en,count,type,chinese,chinese_char
+pop,pop,209,GENRE,FALSE,FALSE
+piano,piano,95,INSTRUMENT,FALSE,FALSE
+guitar,guitar,86,INSTRUMENT,FALSE,FALSE
+rock,rock,76,GENRE,FALSE,FALSE
+rap,rap,57,GENRE,FALSE,FALSE
+bass,bass,52,INSTRUMENT,FALSE,FALSE
+melodic,melodic,48,MOOD,FALSE,FALSE
+electro,electro,46,GENRE,FALSE,FALSE
+drum,drum,45,INSTRUMENT,FALSE,FALSE
+emotional,emotional,44,MOOD,FALSE,FALSE
+r&b,r&b,43,GENRE,FALSE,FALSE
+violin,violin,42,INSTRUMENT,FALSE,FALSE
+emo,emo,42,GENRE,FALSE,FALSE
+sad,sad,41,MOOD,FALSE,FALSE
+female vocals,female vocals,40,VOICE,FALSE,FALSE
+upbeat,upbeat,40,MOOD,FALSE,FALSE
+male voice,male voice,38,VOICE,FALSE,FALSE
+male vocal,male vocal,37,VOICE,FALSE,FALSE
+epic,epic,37,MOOD,FALSE,FALSE
+electronic,electronic,32,GENRE,FALSE,FALSE
+soul,soul,30,GENRE,FALSE,FALSE
+ballad,ballad,29,GENRE,FALSE,FALSE
+female voice,female voice,28,VOICE,FALSE,FALSE
+slow,slow,28,MOOD,FALSE,FALSE
+uplifting,uplifting,27,MOOD,FALSE,FALSE
+dreamy,dreamy,27,MOOD,FALSE,FALSE
+male vocals,male vocals,27,VOICE,FALSE,FALSE
+female vocalist,female vocalist,27,VOICE,FALSE,FALSE
+folk,folk,26,GENRE,FALSE,FALSE
+metal,metal,25,GENRE,FALSE,FALSE
+guzheng,guzheng,25,INSTRUMENT,TRUE,FALSE
+powerful,powerful,24,MOOD,FALSE,FALSE
+synth,synth,23,INSTRUMENT,FALSE,FALSE
+chinese,Chinese,22,LANGUAGE,TRUE,FALSE
+funk,funk,22,GENRE,FALSE,FALSE
+heavy metal,heavy metal,22,GENRE,FALSE,FALSE
+pop rock,pop rock,22,GENRE,FALSE,FALSE
+抒情,Lyrical,21,MOOD,FALSE,TRUE
+beat,beat,21,GENRE,FALSE,FALSE
+romantic,romantic,21,MOOD,FALSE,FALSE
+orchestral,orchestral,20,INSTRUMENT,FALSE,FALSE
+hip hop,hip hop,20,GENRE,FALSE,FALSE
+edm,edm,20,GENRE,FALSE,FALSE
+female vocal,female vocal,19,VOICE,FALSE,FALSE
+atmospheric,atmospheric,19,MOOD,FALSE,FALSE
+melancholic,melancholic,19,MOOD,FALSE,FALSE
+female singer,female singer,19,VOICE,FALSE,FALSE
+mellow,mellow,19,MOOD,FALSE,FALSE
+小提琴,violin,18,INSTRUMENT,FALSE,TRUE
+中国风,chinoiserie,18,GENRE,FALSE,TRUE
+energetic,energetic,18,MOOD,FALSE,FALSE
+electric guitar,electric guitar,18,INSTRUMENT,FALSE,FALSE
+erhu,erhu,18,INSTRUMENT,TRUE,FALSE
+blues,blues,18,GENRE,FALSE,FALSE
+catchy,catchy,18,MOOD,FALSE,FALSE
+drums,drums,18,INSTRUMENT,FALSE,FALSE
+流行,popular,17,MOOD,FALSE,TRUE
+dark,dark,17,MOOD,FALSE,FALSE
+j-pop,j-pop,17,GENRE,FALSE,FALSE
+jazz,jazz,17,GENRE,FALSE,FALSE
+ethereal,ethereal,17,MOOD,FALSE,FALSE
+c-pop,c-pop,17,GENRE,TRUE,FALSE
+ambient,ambient,16,GENRE,FALSE,FALSE
+hard rock,hard rock,16,GENRE,FALSE,FALSE
+hip-hop,hip-hop,15,GENRE,FALSE,FALSE
+heartfelt,heartfelt,15,MOOD,FALSE,FALSE
+acoustic,acoustic,15,INSTRUMENT,FALSE,FALSE
+dance,dance,15,GENRE,FALSE,FALSE
+trap,trap,15,GENRE,FALSE,FALSE
+melancholy,melancholy,14,MOOD,FALSE,FALSE
+vocaloid,vocaloid,14,VOICE,FALSE,FALSE
+male,male,14,VOICE,FALSE,FALSE
+flute,flute,14,INSTRUMENT,FALSE,FALSE
+cantonese,cantonese,14,LANGUAGE,TRUE,FALSE
+alternative,alternative,13,GENRE,FALSE,FALSE
+acoustic guitar,acoustic guitar,13,INSTRUMENT,FALSE,FALSE
+passionate,passionate,13,MOOD,FALSE,FALSE
+钢琴伴奏,Piano accompaniment,12,INSTRUMENT,FALSE,TRUE
+aggressive,aggressive,12,MOOD,FALSE,FALSE
+smooth,smooth,12,MOOD,FALSE,FALSE
+cello,cello,12,INSTRUMENT,FALSE,FALSE
+alternative rock,alternative rock,12,GENRE,FALSE,FALSE
+chill,chill,12,MOOD,FALSE,FALSE
+流行歌曲,Pop songs,11,GENRE,FALSE,TRUE
+chinese musical instruments,Chinese musical instruments,11,INSTRUMENT,TRUE,FALSE
+strings,strings,11,INSTRUMENT,FALSE,FALSE
+k-pop,k-pop,11,GENRE,FALSE,FALSE
+synthwave,synthwave,11,GENRE,FALSE,FALSE
+love,love,11,MOOD,FALSE,FALSE
+electropop,electropop,11,GENRE,FALSE,FALSE
+warm,warm,11,MOOD,FALSE,FALSE
+nostalgic,nostalgic,11,MOOD,FALSE,FALSE
+lyrical,lyrical,10,MOOD,FALSE,FALSE
+cinematic,cinematic,10,MOOD,FALSE,FALSE
+pipa,pipa,10,INSTRUMENT,TRUE,FALSE
+dramatic,dramatic,10,MOOD,FALSE,FALSE
+hiphop,hiphop,10,GENRE,FALSE,FALSE
+rhythmic,rhythmic,10,MOOD,FALSE,FALSE
+drum and bass,drum and bass,10,GENRE,FALSE,FALSE
+classical,classical,10,GENRE,FALSE,FALSE
+male vocalist,male vocalist,10,VOICE,FALSE,FALSE
+mandarin,mandarin,10,GENRE,TRUE,FALSE
+chinese style music,Chinese style music,10,GENRE,TRUE,FALSE
+chinese ancient style,Chinese ancient style,10,GENRE,TRUE,FALSE
+mandopop,mandopop,10,GENRE,TRUE,FALSE
+fast,fast,9,MOOD,FALSE,FALSE
+playful,playful,9,MOOD,FALSE,FALSE
+lo-fi,lo-fi,9,GENRE,FALSE,FALSE
+anthemic,anthemic,9,MOOD,FALSE,FALSE
+heroic,heroic,9,MOOD,FALSE,FALSE
+math rock,math rock,9,GENRE,FALSE,FALSE
+female,female,9,VOICE,FALSE,FALSE
+intense,intense,9,MOOD,FALSE,FALSE
+synthpop,synthpop,9,GENRE,FALSE,FALSE
+indie,indie,9,GENRE,FALSE,FALSE
+indie pop,indie pop,9,GENRE,FALSE,FALSE
+男声,Male,8,VOICE,FALSE,TRUE
+民族女高音,National soprano,8,VOICE,FALSE,TRUE
+民谣,ballad,8,GENRE,FALSE,TRUE
+rhythmic pop,rhythmic pop,8,GENRE,FALSE,FALSE
+90s,90s,8,DECADE,FALSE,FALSE
+pop rap,pop rap,8,GENRE,FALSE,FALSE
+keyboard,keyboard,8,INSTRUMENT,FALSE,FALSE
+contemporary r&b,contemporary r&b,8,GENRE,FALSE,FALSE
+country,country,8,GENRE,FALSE,FALSE
+groovy,groovy,8,MOOD,FALSE,FALSE
+synthesizer,synthesizer,8,INSTRUMENT,FALSE,FALSE
+chinese style,Chinese style,8,GENRE,TRUE,FALSE
+rnb,rnb,7,GENRE,FALSE,FALSE
+lush,lush,7,MOOD,FALSE,FALSE
+operatic,operatic,7,GENRE,FALSE,FALSE
+saxophone,saxophone,7,INSTRUMENT,FALSE,FALSE
+swing,swing,7,GENRE,FALSE,FALSE
+,,7,,FALSE,FALSE
+chinese pop,Chinese pop,7,GENRE,TRUE,FALSE
+soft rock,soft rock,7,GENRE,FALSE,FALSE
+钢琴,piano,6,INSTRUMENT,FALSE,TRUE
+chinese rhythms,Chinese rhythms,6,GENRE,TRUE,FALSE
+eerie,eerie,6,MOOD,FALSE,FALSE
+chorus,chorus,6,STRUCTURE,FALSE,FALSE
+trance,trance,6,GENRE,FALSE,FALSE
+bounce drop,bounce drop,6,STRUCTURE,FALSE,FALSE
+enka,enka,6,GENRE,FALSE,FALSE
+techno,techno,6,GENRE,FALSE,FALSE
+bamboo flute,bamboo flute,6,INSTRUMENT,FALSE,FALSE
+harp,harp,6,INSTRUMENT,FALSE,FALSE
+studio quality,studio quality,6,MOOD,FALSE,FALSE
+lofi,lofi,6,GENRE,FALSE,FALSE
+city pop,city pop,6,GENRE,FALSE,FALSE
+dance-pop,dance-pop,6,GENRE,FALSE,FALSE
+downtempo,downtempo,6,GENRE,FALSE,FALSE
+soft,soft,6,MOOD,FALSE,FALSE
+electronic pop,electronic pop,6,GENRE,FALSE,FALSE
+male singer,male singer,6,VOICE,FALSE,FALSE
+bittersweet,bittersweet,6,MOOD,FALSE,FALSE
+nu metal,nu metal,6,GENRE,FALSE,FALSE
+吉他,guitar,5,INSTRUMENT,FALSE,TRUE
+輕快,Brisk,5,MOOD,FALSE,TRUE
+古风,ancientry,5,MOOD,FALSE,TRUE
+古筝,zither,5,INSTRUMENT,TRUE,TRUE
+二胡,erhu,5,INSTRUMENT,TRUE,TRUE
+electronic dance music,electronic dance music,5,GENRE,FALSE,FALSE
+anime,anime,5,GENRE,FALSE,FALSE
+fairy-tale like,fairy-tale like,5,MOOD,FALSE,FALSE
+happy,happy,5,MOOD,FALSE,FALSE
+heavy,heavy,5,MOOD,FALSE,FALSE
+style,style,5,OTHER,FALSE,FALSE
+in mandarin,in mandarin,5,LANGUAGE,TRUE,FALSE
+bhm,bhm,5,OTHER,FALSE,FALSE
+sadness,sadness,5,MOOD,FALSE,FALSE
+bells,bells,5,INSTRUMENT,FALSE,FALSE
+indie rock,indie rock,5,GENRE,FALSE,FALSE
+sentimental,sentimental,5,MOOD,FALSE,FALSE
+trip hop,trip hop,5,GENRE,FALSE,FALSE
+pentatonic scale,pentatonic scale,5,KEY,FALSE,FALSE
+miku voice,miku voice,5,VOICE,FALSE,FALSE
+dizi,dizi,5,INSTRUMENT,TRUE,FALSE
+cpop,cpop,5,GENRE,FALSE,FALSE
+dissonant,dissonant,5,MOOD,FALSE,FALSE
+psychedelic,psychedelic,5,GENRE,FALSE,FALSE
+80s,80s,5,DECADE,FALSE,FALSE
+medieval,medieval,5,GENRE,FALSE,FALSE
+love songs,love songs,5,MOOD,FALSE,FALSE
+death metal,death metal,5,GENRE,FALSE,FALSE
+vflower voice,vflower voice,5,VOICE,FALSE,FALSE
+pop rhythmic,pop rhythmic,5,GENRE,FALSE,FALSE
+war,war,5,MOOD,FALSE,FALSE
+chinese traditional folk,Chinese traditional folk,5,GENRE,TRUE,FALSE
+choir,choir,5,INSTRUMENT,FALSE,FALSE
+chinese traditional,Chinese traditional,5,GENRE,TRUE,FALSE
+orchestra,orchestra,5,INSTRUMENT,FALSE,FALSE
+nakasi,nakasi,5,GENRE,FALSE,FALSE
+opera,opera,5,GENRE,FALSE,FALSE
+inspirational,inspirational,5,MOOD,FALSE,FALSE
+mutation funk,mutation funk,5,GENRE,FALSE,FALSE
+pathological,pathological,5,MOOD,FALSE,FALSE
+innocent lonely,innocent lonely,5,MOOD,FALSE,FALSE
+60 bpm,60 bpm,5,BPM,FALSE,FALSE
+原声,Original,4,OTHER,FALSE,TRUE
+欢快,Cheerful,4,MOOD,FALSE,TRUE
+旋律的電子嘻哈,Melodic electronic hip-hop,4,MIXED,FALSE,TRUE
+伤感,Sad,4,MOOD,FALSE,TRUE
+合成器,synthesizer,4,INSTRUMENT,FALSE,TRUE
+90 bpm,90 bpm,4,BPM,FALSE,FALSE
+pop acoustic melodic,pop acoustic melodic,4,GENRE,FALSE,FALSE
+off-beat rhythm,off-beat rhythm,4,STRUCTURE,FALSE,FALSE
+march,march,4,GENRE,FALSE,FALSE
+mandarin song,mandarin song,4,LANGUAGE,TRUE,FALSE
+symphony,symphony,4,INSTRUMENT,FALSE,FALSE
+china,China,4,GENRE,TRUE,FALSE
+melodic pop,melodic pop,4,GENRE,FALSE,FALSE
+new age,new age,4,GENRE,FALSE,FALSE
+chinese folk,Chinese folk,4,GENRE,TRUE,FALSE
+girl group,girl group,4,GENRE,FALSE,FALSE
+gentle,gentle,4,MOOD,FALSE,FALSE
+fast-paced,fast-paced,4,MOOD,FALSE,FALSE
+solo,solo,4,STRUCTURE,FALSE,FALSE
+sweet,sweet,4,MOOD,FALSE,FALSE
+experimental,experimental,4,GENRE,FALSE,FALSE
+passion,passion,4,MOOD,FALSE,FALSE
+fast tempo,fast tempo,4,STRUCTURE,FALSE,FALSE
+sophisti-pop,sophisti-pop,4,GENRE,FALSE,FALSE
+sorrow,sorrow,4,MOOD,FALSE,FALSE
+night-lovingscene,night-lovingscene,4,MOOD,FALSE,FALSE
+dreamy violin,dreamy violin,4,INSTRUMENT,FALSE,FALSE
+dream pop,dream pop,4,GENRE,FALSE,FALSE
+romance,romance,4,MOOD,FALSE,FALSE
+power metal,power metal,4,GENRE,FALSE,FALSE
+dj,dj,4,INSTRUMENT,FALSE,FALSE
+high notes,high notes,4,STRUCTURE,FALSE,FALSE
+j-rock,j-rock,4,GENRE,FALSE,FALSE
+duet,duet,4,GENRE,FALSE,FALSE
+introspective,introspective,4,MOOD,FALSE,FALSE
+rock and roll,rock and roll,4,GENRE,FALSE,FALSE
+disco,disco,4,GENRE,FALSE,FALSE
+vaporwave,vaporwave,4,GENRE,FALSE,FALSE
+reggae,reggae,4,GENRE,FALSE,FALSE
+majestic,majestic,4,MOOD,FALSE,FALSE
+electro house,electro house,4,GENRE,FALSE,FALSE
+ancient style,ancient style,4,GENRE,FALSE,FALSE
+discordant harmony,discordant harmony,4,MOOD,FALSE,FALSE
+deep,deep,4,GENRE,FALSE,FALSE
+pop-rock,pop-rock,4,GENRE,FALSE,FALSE
+relaxing,relaxing,4,MOOD,FALSE,FALSE
+inspiring,inspiring,4,MOOD,FALSE,FALSE
+reflective,reflective,4,MOOD,FALSE,FALSE
+大提琴,cello,3,INSTRUMENT,FALSE,TRUE
+悠扬,Melodious,3,MOOD,FALSE,TRUE
+80年代经典金曲,80s classic hits,3,GENRE,FALSE,TRUE
+箫,Xiao,3,INSTRUMENT,TRUE,TRUE
+摇滚,Rock,3,GENRE,FALSE,TRUE
+电吉他,electric guitar,3,INSTRUMENT,FALSE,TRUE
+普通话,Mandarin,3,LANGUAGE,TRUE,TRUE
+cantonese song,cantonese song,3,LANGUAGE,FALSE,FALSE
+electronic sampling,electronic sampling,3,INSTRUMENT,FALSE,FALSE
+classic,classic,3,GENRE,FALSE,FALSE
+traditional chinese,traditional Chinese,3,GENRE,TRUE,FALSE
+boastful,boastful,3,MOOD,FALSE,FALSE
+drill,drill,3,GENRE,FALSE,FALSE
+bossa nova,bossa nova,3,GENRE,FALSE,FALSE
+choral,choral,3,INSTRUMENT,FALSE,FALSE
+choral music,choral music,3,GENRE,FALSE,FALSE
+drum & bass,drum & bass,3,GENRE,FALSE,FALSE
+electronic disco,electronic disco,3,GENRE,FALSE,FALSE
+chinese traditional music,Chinese traditional music,3,GENRE,TRUE,FALSE
+electronic music,electronic music,3,GENRE,FALSE,FALSE
+brisk,brisk,3,MOOD,FALSE,FALSE
+dark pop,dark pop,3,GENRE,FALSE,FALSE
+darkness,darkness,3,MOOD,FALSE,FALSE
+chillout,chillout,3,GENRE,FALSE,FALSE
+taiwanese,taiwanese,3,LANGUAGE,FALSE,FALSE
+taiwanese hokkien,taiwanese hokkien,3,GENRE,FALSE,FALSE
+dance pop,dance pop,3,GENRE,FALSE,FALSE
+deep male vocal,deep male vocal,3,VOICE,FALSE,FALSE
+d minor,d minor,3,KEY,FALSE,FALSE
+verses with storytelling,verses with storytelling,3,STRUCTURE,FALSE,FALSE
+brass,brass,3,INSTRUMENT,FALSE,FALSE
+strong bassline,strong bassline,3,STRUCTURE,FALSE,FALSE
+c major,c major,3,KEY,FALSE,FALSE
+cozy bedroom,cozy bedroom,3,MOOD,FALSE,FALSE
+emotion,emotion,3,MOOD,FALSE,FALSE
+clear voice,clear voice,3,VOICE,FALSE,FALSE
+ethereal female voice,ethereal female voice,3,VOICE,FALSE,FALSE
+dj version,dj version,3,GENRE,FALSE,FALSE
+sweet voice,sweet voice,3,VOICE,FALSE,FALSE
+cheerful,cheerful,3,MOOD,FALSE,FALSE
+suona,suona,3,INSTRUMENT,FALSE,FALSE
+classical music,classical music,3,GENRE,FALSE,FALSE
+zheng,zheng,3,INSTRUMENT,TRUE,FALSE
+triumphant,triumphant,3,MOOD,FALSE,FALSE
+cute,cute,3,MOOD,FALSE,FALSE
+lyrical pop,lyrical pop,3,GENRE,FALSE,FALSE
+guitar.bass. live music. night-lovingscene. j-pop. indie-rock.alternative dance.nu-disco. post-punk. female pop,guitar.bass. live music. night-lovingscene. j-pop. indie-rock.alternative dance.nu-disco. post-punk. female pop,3,MIXED,FALSE,FALSE
+psychedelic rock,psychedelic rock,3,GENRE,FALSE,FALSE
+guqin,guqin,3,INSTRUMENT,TRUE,FALSE
+simple,simple,3,MOOD,FALSE,FALSE
+shakuhachi,shakuhachi,3,INSTRUMENT,FALSE,FALSE
+alternative dance,alternative dance,3,GENRE,FALSE,FALSE
+jazz rock,jazz rock,3,GENRE,FALSE,FALSE
+lyricism,lyricism,3,MOOD,FALSE,FALSE
+lyrics,lyrics,3,OTHER,FALSE,FALSE
+melodious piano sound,melodious piano sound,3,INSTRUMENT,FALSE,FALSE
+phonk,phonk,3,GENRE,FALSE,FALSE
+romantic pop,romantic pop,3,GENRE,FALSE,FALSE
+melodious,melodious,3,MOOD,FALSE,FALSE
+angry,angry,3,MOOD,FALSE,FALSE
+acoustic melodic pop,acoustic melodic pop,3,GENRE,FALSE,FALSE
+poetic,poetic,3,MOOD,FALSE,FALSE
+hopeful,hopeful,3,MOOD,FALSE,FALSE
+ambient house p-funk,ambient house p-funk,3,GENRE,FALSE,FALSE
+medium,medium,3,MOOD,FALSE,FALSE
+house,house,3,GENRE,FALSE,FALSE
+intro,intro,3,STRUCTURE,FALSE,FALSE
+impassioned,impassioned,3,MOOD,FALSE,FALSE
+rebellious,rebellious,3,MOOD,FALSE,FALSE
+instrumental,instrumental,3,GENRE,FALSE,FALSE
+pop electronic,pop electronic,3,GENRE,FALSE,FALSE
+harmony,harmony,3,STRUCTURE,FALSE,FALSE
+lo-fi japanese city funk. night-lovingscene. complex electroswing.female pop,lo-fi japanese city funk. night-lovingscene. complex electroswing.female pop,3,MIXED,FALSE,FALSE
+off-beat bass,off-beat bass,3,INSTRUMENT,FALSE,FALSE
+post-punk,post-punk,3,GENRE,FALSE,FALSE
+post-rock,post-rock,3,GENRE,FALSE,FALSE
+120 bpm,120 bpm,3,BPM,FALSE,FALSE
+lo-fi bossa nova,lo-fi bossa nova,3,GENRE,FALSE,FALSE
+lonely,lonely,3,MOOD,FALSE,FALSE
+fun,fun,3,MOOD,FALSE,FALSE
+funky rock,funky rock,3,GENRE,FALSE,FALSE
+soothing,soothing,3,MOOD,FALSE,FALSE
+live music,live music,3,GENRE,FALSE,FALSE
+kpop,kpop,3,GENRE,FALSE,FALSE
+futuristic,futuristic,3,MOOD,FALSE,FALSE
+narrative,narrative,3,MOOD,FALSE,FALSE
+longing,longing,3,MOOD,FALSE,FALSE
+smooth jazz,smooth jazz,3,GENRE,FALSE,FALSE
+70 bpm,70 bpm,3,BPM,FALSE,FALSE
+post rock,post rock,3,GENRE,FALSE,FALSE
+peking opera,peking opera,3,GENRE,FALSE,FALSE
+positive,positive,3,MOOD,FALSE,FALSE
+kawaii,kawaii,3,MOOD,FALSE,FALSE
+modern classical,modern classical,3,GENRE,FALSE,FALSE
+中文,Chinese,2,LANGUAGE,TRUE,TRUE
+激昂,Passionate,2,MOOD,FALSE,TRUE
+默认设置为钢琴,The default setting is piano,2,INSTRUMENT,FALSE,TRUE
+励志,Inspirational,2,MOOD,FALSE,TRUE
+动感,Dynamic,2,MOOD,FALSE,TRUE
+鼓,drum,2,INSTRUMENT,FALSE,TRUE
+情感,emotion,2,MOOD,FALSE,TRUE
+普通话版本,Mandarin version,2,LANGUAGE,TRUE,TRUE
+悲伤,sadness,2,MOOD,FALSE,TRUE
+离别,parting,2,MOOD,FALSE,TRUE
+快节奏,Fast-paced,2,MOOD,FALSE,TRUE
+相思,acacia,2,OTHER,FALSE,TRUE
+快,fast,2,MOOD,FALSE,TRUE
+琵琶,pipa,2,INSTRUMENT,TRUE,TRUE
+古风歌曲,Ancient style songs,2,GENRE,FALSE,TRUE
+深情,affectionate,2,MOOD,FALSE,TRUE
+可爱,Lovely,2,MOOD,FALSE,TRUE
+抒情 流行 中文,Lyrical popular Chinese,2,GENRE,TRUE,TRUE
+電子,electron,2,OTHER,FALSE,TRUE
+古典,Classical,2,GENRE,FALSE,TRUE
+舞曲,Dance,2,GENRE,FALSE,TRUE
+搖滾,Rock,2,GENRE,FALSE,TRUE
+流行音乐,popular music,2,GENRE,FALSE,TRUE
+舒缓,Soothing,2,MOOD,FALSE,TRUE
+温暖,warm,2,MOOD,FALSE,TRUE
+電子 流行 抒情,Electronic pop lyrical,2,MIXED,FALSE,TRUE
+chinese symphonic orchestra +martial arts style + male choral ensemble + thematic variations + chinese opera element,Chinese symphonic orchestra + martial arts style + male choral ensemble + thematic variations + Chinese opera element,2,MIXED,TRUE,TRUE
+民謠,Folk,2,GENRE,FALSE,TRUE
+梦幻,dream,2,MOOD,FALSE,TRUE
+鋼琴,piano,2,INSTRUMENT,FALSE,TRUE
+幽默,humor,2,MOOD,FALSE,TRUE
+deep bass,deep bass,2,GENRE,FALSE,FALSE
+mandarin pop,mandarin pop,2,GENRE,TRUE,FALSE
+deathcore,deathcore,2,GENRE,FALSE,FALSE
+mandarin lyrics,mandarin lyrics,2,LANGUAGE,FALSE,FALSE
+deep house,deep house,2,GENRE,FALSE,FALSE
+dark electronic rock,dark electronic rock,2,MIXED,FALSE,FALSE
+low pitch,low pitch,2,STRUCTURE,FALSE,FALSE
+deep soul,deep soul,2,GENRE,FALSE,FALSE
+man vocal,man vocal,2,VOICE,FALSE,FALSE
+dark folk,dark folk,2,GENRE,FALSE,FALSE
+pop light,pop light,2,GENRE,FALSE,FALSE
+male bass singer,male bass singer,2,VOICE,FALSE,FALSE
+pop music,pop music,2,GENRE,FALSE,FALSE
+male solo,male solo,2,MIXED,FALSE,FALSE
+pop uplifting,pop uplifting,2,MIXED,FALSE,FALSE
+youthful,youthful,2,MOOD,FALSE,FALSE
+minor,minor,2,KEY,FALSE,FALSE
+classical crossover,classical crossover,2,GENRE,FALSE,FALSE
+percussion,percussion,2,INSTRUMENT,FALSE,FALSE
+peaceful,peaceful,2,MOOD,FALSE,FALSE
+pathos piano,pathos piano,2,MIXED,FALSE,FALSE
+citypop,citypop,2,GENRE,FALSE,FALSE
+city-pop,city-pop,2,GENRE,FALSE,FALSE
+motivational,motivational,2,MOOD,FALSE,FALSE
+piano rock,piano rock,2,MIXED,FALSE,FALSE
+mystical,mystical,2,MOOD,FALSE,FALSE
+party,party,2,MOOD,FALSE,FALSE
+organ,organ,2,INSTRUMENT,FALSE,FALSE
+never give up,never give up,2,MOOD,FALSE,FALSE
+new age music,new age music,2,GENRE,FALSE,FALSE
+orchestral instruments,orchestral instruments,2,INSTRUMENT,FALSE,FALSE
+nightcore,nightcore,2,GENRE,FALSE,FALSE
+nu-disco,nu-disco,2,GENRE,FALSE,FALSE
+mozart,mozart,2,GENRE,FALSE,FALSE
+pop dance,pop dance,2,GENRE,FALSE,FALSE
+pop celebratory,pop celebratory,2,MIXED,FALSE,FALSE
+meditation,meditation,2,MOOD,FALSE,FALSE
+meditative,meditative,2,MOOD,FALSE,FALSE
+volksmusik,volksmusik,2,GENRE,FALSE,FALSE
+warfare,warfare,2,MOOD,FALSE,FALSE
+mellow ballad,mellow ballad,2,MIXED,FALSE,FALSE
+western classical music,western classical music,2,GENRE,FALSE,FALSE
+country music,country music,2,GENRE,FALSE,FALSE
+young male voice,young male voice,2,VOICE,FALSE,FALSE
+wind chime,wind chime,2,INSTRUMENT,FALSE,FALSE
+melody,melody,2,STRUCTURE,FALSE,FALSE
+witch house,witch house,2,GENRE,FALSE,FALSE
+piano cover,piano cover,2,GENRE,FALSE,FALSE
+conceptually close: environmental pop,conceptually close: environmental pop,2,GENRE,FALSE,FALSE
+world,world,2,GENRE,FALSE,FALSE
+world music,world music,2,GENRE,FALSE,FALSE
+piano and strings,piano and strings,2,INSTRUMENT,FALSE,FALSE
+clear male vocal,clear male vocal,2,VOICE,FALSE,FALSE
+young female voice,young female voice,2,VOICE,FALSE,FALSE
+whistle,whistle,2,INSTRUMENT,FALSE,FALSE
+gangsta rap,gangsta rap,2,GENRE,FALSE,FALSE
+gothic rock ethnic hip hop,gothic rock ethnic hip hop,2,MIXED,FALSE,FALSE
+slow tempo,slow tempo,2,STRUCTURE,FALSE,FALSE
+guitar and piano,guitar and piano,2,INSTRUMENT,FALSE,FALSE
+guitar solo,guitar solo,2,STRUCTURE,FALSE,FALSE
+epic rock,epic rock,2,GENRE,FALSE,FALSE
+synth-pop,synth-pop,2,GENRE,FALSE,FALSE
+hair/glam metal,hair/glam metal,2,GENRE,FALSE,FALSE
+k-r&b,k-r&b,2,GENRE,FALSE,FALSE
+happy hardcore,happy hardcore,2,MIXED,FALSE,FALSE
+screamo,screamo,2,GENRE,FALSE,FALSE
+taiko,taiko,2,INSTRUMENT,FALSE,FALSE
+hardcore rap,hardcore rap,2,GENRE,FALSE,FALSE
+hardstyle,hardstyle,2,GENRE,FALSE,FALSE
+harmonica,harmonica,2,INSTRUMENT,FALSE,FALSE
+emotional vocals,emotional vocals,2,VOICE,FALSE,FALSE
+taiwanese singer,taiwanese singer,2,LANGUAGE,TRUE,FALSE
+emotional ballad,emotional ballad,2,GENRE,FALSE,FALSE
+serene,serene,2,MOOD,FALSE,FALSE
+female cute pop,female cute pop,2,GENRE,FALSE,FALSE
+female pop,female pop,2,MIXED,FALSE,FALSE
+female solo,female solo,2,VOICE,FALSE,FALSE
+spooky halloween,spooky halloween,2,MOOD,FALSE,FALSE
+fire,fire,2,MOOD,FALSE,FALSE
+spanish guitar,spanish guitar,2,INSTRUMENT,FALSE,FALSE
+folk metal,folk metal,2,GENRE,FALSE,FALSE
+future bass,future bass,2,GENRE,FALSE,FALSE
+ethereal singing angry girl,ethereal singing angry girl,2,VOICE,FALSE,FALSE
+fade in intro,fade in intro,2,STRUCTURE,FALSE,FALSE
+suspenseful,suspenseful,2,MOOD,FALSE,FALSE
+futuristic delta blues,futuristic delta blues,2,MIXED,FALSE,FALSE
+g major,g major,2,KEY,FALSE,FALSE
+evil,evil,2,MOOD,FALSE,FALSE
+ethereal wave,ethereal wave,2,GENRE,FALSE,FALSE
+ethereal voice,ethereal voice,2,GENRE,FALSE,FALSE
+ethereal vocals,ethereal vocals,2,VOICE,FALSE,FALSE
+sweet vocal,sweet vocal,2,VOICE,FALSE,FALSE
+sung poetry,sung poetry,2,GENRE,FALSE,FALSE
+italian pop,italian pop,2,GENRE,FALSE,FALSE
+dubstep,dubstep,2,GENRE,FALSE,FALSE
+r&b mellow bittersweet pop,r&b mellow bittersweet pop,2,MIXED,FALSE,FALSE
+japanese,japanese,2,LANGUAGE,FALSE,FALSE
+drum set,drum set,2,INSTRUMENT,FALSE,FALSE
+drum kit,drum kit,2,INSTRUMENT,FALSE,FALSE
+jazz-hiphop,jazz-hiphop,2,GENRE,FALSE,FALSE
+punk,punk,2,GENRE,FALSE,FALSE
+sad love song,sad love song,2,MIXED,FALSE,FALSE
+joy,joy,2,MOOD,FALSE,FALSE
+kawaii future bass,kawaii future bass,2,GENRE,FALSE,FALSE
+progressive,progressive,2,GENRE,FALSE,FALSE
+kids choir,kids choir,2,VOICE,FALSE,FALSE
+kids singer,kids singer,2,VOICE,FALSE,FALSE
+korean music,korean music,2,GENRE,FALSE,FALSE
+koto,koto,2,INSTRUMENT,FALSE,FALSE
+light music,light music,2,GENRE,FALSE,FALSE
+lively pop,lively pop,2,MIXED,FALSE,FALSE
+treble,treble,2,STRUCTURE,FALSE,FALSE
+sad but beautiful,sad but beautiful,2,MOOD,FALSE,FALSE
+hi-res,hi-res,2,STRUCTURE,FALSE,FALSE
+hip hop rap,hip hop rap,2,GENRE,FALSE,FALSE
+rock music,rock music,2,GENRE,FALSE,FALSE
+riot girl,riot girl,2,GENRE,FALSE,FALSE
+horror,horror,2,MOOD,FALSE,FALSE
+the combat band of sorrow,the combat band of sorrow,2,MOOD,FALSE,FALSE
+the throb of soul,the throb of soul,2,MOOD,FALSE,FALSE
+humorous,humorous,2,MOOD,FALSE,FALSE
+rain,rain,2,MOOD,FALSE,FALSE
+indie-rock,indie-rock,2,GENRE,FALSE,FALSE
+industrial rock,industrial rock,2,GENRE,FALSE,FALSE
+infectious,infectious,2,MOOD,FALSE,FALSE
+inspirational rap,inspirational rap,2,MIXED,FALSE,FALSE
+tradition mandarin,tradition mandarin,2,GENRE,TRUE,FALSE
+eclectic,eclectic,2,MOOD,FALSE,FALSE
+easy listening,easy listening,2,GENRE,FALSE,FALSE
+traditional chinese music,traditional Chinese music,2,GENRE,TRUE,FALSE
+e minor,e minor,2,KEY,FALSE,FALSE
+immersive,immersive,2,MOOD,FALSE,FALSE
+chinese classical,Chinese classical,2,GENRE,TRUE,FALSE
+beat drop,beat drop,2,STRUCTURE,FALSE,FALSE
+accordion,accordion,2,INSTRUMENT,FALSE,FALSE
+chinese drums,Chinese drums,2,INSTRUMENT,TRUE,FALSE
+&kpop,&kpop,2,GENRE,FALSE,FALSE
+chinese folk instrumental,Chinese folk instrumental,2,GENRE,TRUE,FALSE
+alternative pop,alternative pop,2,GENRE,FALSE,FALSE
+chinese folk music,Chinese folk music,2,GENRE,TRUE,FALSE
+160bpm,160bpm,2,BPM,FALSE,FALSE
+bass guitar,bass guitar,2,INSTRUMENT,FALSE,FALSE
+acoustic pop melodic,acoustic pop melodic,2,MIXED,FALSE,FALSE
+blue,blue,2,GENRE,FALSE,FALSE
+blues rock,blues rock,2,GENRE,FALSE,FALSE
+children's song,children's song,2,GENRE,FALSE,FALSE
+70s progressive rock,70s progressive rock,2,MIXED,FALSE,FALSE
+ancient chinese music,ancient Chinese music,2,GENRE,TRUE,FALSE
+afro trap r&b,afro trap r&b,2,MIXED,FALSE,FALSE
+beats,beats,2,STRUCTURE,FALSE,FALSE
+chillwave,chillwave,2,GENRE,FALSE,FALSE
+celtic,celtic,2,GENRE,FALSE,FALSE
+a cappella,a cappella,2,INSTRUMENT,FALSE,FALSE
+bedroom pop,bedroom pop,2,GENRE,FALSE,FALSE
+chinese ballad,Chinese ballad,2,GENRE,TRUE,FALSE
+catchy instrumental intro,catchy instrumental intro,2,STRUCTURE,FALSE,FALSE
+bar chimes,bar chimes,2,INSTRUMENT,FALSE,FALSE
+algorave hawaiian,algorave hawaiian,2,MIXED,FALSE,FALSE
+adult contemporary,adult contemporary,2,GENRE,FALSE,FALSE
+128 bpm,128 bpm,2,BPM,FALSE,FALSE
+chinese tradition,Chinese tradition,2,GENRE,TRUE,FALSE
+chinese opera,Chinese opera,2,GENRE,TRUE,FALSE
+adventurous,adventurous,2,MOOD,FALSE,FALSE
+calm,calm,2,MOOD,FALSE,FALSE
+110 bpm,110 bpm,2,BPM,FALSE,FALSE
+120bpm,120bpm,2,BPM,FALSE,FALSE
+art pop,art pop,2,GENRE,FALSE,FALSE
+anthem,anthem,2,GENRE,FALSE,FALSE
+old romantic,old romantic,2,MOOD,FALSE,FALSE
+68 bpm,68 bpm,2,BPM,FALSE,FALSE
+baritone,baritone,2,VOICE,FALSE,FALSE
+4/4,4/4,2,STRUCTURE,FALSE,FALSE
+cantonese lyrics,cantonese lyrics,2,LANGUAGE,TRUE,FALSE
+100 bpm,100 bpm,2,BPM,FALSE,FALSE
+432,432,2,STRUCTURE,FALSE,FALSE
