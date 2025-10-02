@@ -18,9 +18,9 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 m-2 p-2 bg-dark text-white">
+            <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.4</h6>
+                    <h6 class="badge bg-info">v0.5</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -122,10 +122,10 @@
                 graphLayout['responsive'] = true;
                 // graphLayout['height'] = 900;
                 // graphLayout['width'] = 1600;
-                graphLayout['legend'] = { 'orientation': 'v' };
-                if (plotType == "lyrics") {
-                    graphLayout['legend'] = false;
-                }
+                // graphLayout['legend'] = { 'orientation': 'v' };
+                // if (plotType == "lyrics") {
+                //     graphLayout['legend'] = false;
+                // }
                 Plotly.newPlot('plotDiv', graphData, graphLayout);
 
                 document.getElementById("plotDiv").on('plotly_click', function (clickData) {
