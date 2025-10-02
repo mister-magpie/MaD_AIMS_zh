@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2 bg-dark text-white">
                 <div>
-                    <h6 class="badge">v0.2</h6>
+                    <h6 class="badge bg-info">v0.3</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -121,9 +121,9 @@
                 var graphData = plotJson.data;
                 var graphLayout = plotJson.layout;
                 graphLayout['autosize'] = true;
-                graphLayout['height'] = 1080;
-                graphLayout['width'] = 1920;
-                graphLayout['legend'] = { 'orientation': 'h' };
+                graphLayout['height'] = 900;
+                graphLayout['width'] = 1600;
+                graphLayout['legend'] = { 'orientation': 'v' };
                 Plotly.newPlot('plotDiv', graphData, graphLayout);
 
                 document.getElementById("plotDiv").on('plotly_click', function (clickData) {
