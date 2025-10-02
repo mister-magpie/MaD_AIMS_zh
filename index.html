@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.6</h6>
+                    <h6 class="badge bg-info">v0.7</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -51,6 +51,7 @@
                     <div id="plotDiv" class="my-3"></div>
                 </div>
                 <div id="infoDiv" class="col-12 border-1">
+                    <h3>Cluster Contents</h3>
 
                 </div>
             </div>
@@ -70,53 +71,23 @@
                     return null;
                 });
             if (data) {
-                // create dropdown inside of #infoDiv with column names and cluster according the column "hdb_label"
-                let infoDiv = document.getElementById("infoDiv");
-                let select = document.createElement("select");
-                select.className = "form-select";
-                select.id = "columnSelect";
-                let defaultOption = document.createElement("option");
-                defaultOption.text = "Select a column to view unique values";
-                defaultOption.value = "";
-                select.appendChild(defaultOption);
-                data.then(jsonData => {
-                    let columns = Object.keys(jsonData[0]);
-                    columns.forEach(column => {
-                        let option = document.createElement("option");
-                        option.text = column;
-                        option.value = column;
-                        select.appendChild(option);
-                    });
-                    infoDiv.appendChild(select);
-                    let valueDiv = document.createElement("div");
-                    valueDiv.id = "valueDiv";
-                    valueDiv.className = "mt-3";
-                    infoDiv.appendChild(valueDiv);
-                    select.addEventListener("change", function () {
-                        let selectedColumn = this.value;
-                        let uniqueValues = new Set();
-                        jsonData.forEach(row => {
-                            if (row[selectedColumn] !== undefined && row[selectedColumn] !== null) {
-                                uniqueValues.add(row[selectedColumn]);
-                            }
-                        });
-                        let valueDiv = document.getElementById("valueDiv");
-                        valueDiv.innerHTML = "";
-                        if (selectedColumn) {
-                            let heading = document.createElement("h5");
-                            heading.textContent = `Unique values in column "${selectedColumn}":`;
-                            valueDiv.appendChild(heading);
-                            let list = document.createElement("ul");
-                            uniqueValues.forEach(value => {
-                                let listItem = document.createElement("li");
-                                listItem.textContent = value;
-                                list.appendChild(listItem);
-                            });
-                            valueDiv.appendChild(list);
-                        }
-                    });
-                });
+                // create two dropdown inside of #infoDiv 
+                // one with the column names from the data
+                // one with value of the column "hdb_label"
+                for (const columnName of Object.keys(data[0])) {
+                    const option = document.createElement('option');
+                    option.value = columnName;
+                    option.text = columnName;
+                    document.getElementById('infoDiv').appendChild(option);
+                }
+                for (const row of data) {
+                    const option = document.createElement('option');
+                    option.value = row['hdb_label'];
+                    option.text = row['hdb_label'];
+                    document.getElementById('infoDiv').appendChild(option);
+                }
             }
+
         </script>
 
         <script>
