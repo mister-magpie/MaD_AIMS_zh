@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.7</h6>
+                    <h6 class="badge bg-info">v0.6</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -50,9 +50,74 @@
                 <div class="col-12">
                     <div id="plotDiv" class="my-3"></div>
                 </div>
-                <div id="infoDiv" class="col-12 border-1"></div>
+                <div id="infoDiv" class="col-12 border-1">
+
+                </div>
             </div>
         </div>
+
+        <script>
+            // load the data json file on page load
+            dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json`
+            data = fetch(dataurl)
+                .then(response => response.json())
+                .then(jsonData => {
+                    console.log("Data loaded:", jsonData);
+                    return jsonData;
+                })
+                .catch(error => {
+                    console.error("Error loading data:", error);
+                    return null;
+                });
+            if (data) {
+                // create dropdown inside of #infoDiv with column names and cluster according the column "hdb_label"
+                let infoDiv = document.getElementById("infoDiv");
+                let select = document.createElement("select");
+                select.className = "form-select";
+                select.id = "columnSelect";
+                let defaultOption = document.createElement("option");
+                defaultOption.text = "Select a column to view unique values";
+                defaultOption.value = "";
+                select.appendChild(defaultOption);
+                data.then(jsonData => {
+                    let columns = Object.keys(jsonData[0]);
+                    columns.forEach(column => {
+                        let option = document.createElement("option");
+                        option.text = column;
+                        option.value = column;
+                        select.appendChild(option);
+                    });
+                    infoDiv.appendChild(select);
+                    let valueDiv = document.createElement("div");
+                    valueDiv.id = "valueDiv";
+                    valueDiv.className = "mt-3";
+                    infoDiv.appendChild(valueDiv);
+                    select.addEventListener("change", function () {
+                        let selectedColumn = this.value;
+                        let uniqueValues = new Set();
+                        jsonData.forEach(row => {
+                            if (row[selectedColumn] !== undefined && row[selectedColumn] !== null) {
+                                uniqueValues.add(row[selectedColumn]);
+                            }
+                        });
+                        let valueDiv = document.getElementById("valueDiv");
+                        valueDiv.innerHTML = "";
+                        if (selectedColumn) {
+                            let heading = document.createElement("h5");
+                            heading.textContent = `Unique values in column "${selectedColumn}":`;
+                            valueDiv.appendChild(heading);
+                            let list = document.createElement("ul");
+                            uniqueValues.forEach(value => {
+                                let listItem = document.createElement("li");
+                                listItem.textContent = value;
+                                list.appendChild(listItem);
+                            });
+                            valueDiv.appendChild(list);
+                        }
+                    });
+                });
+            }
+        </script>
 
         <script>
             // Only consider plot type, not labels
@@ -74,21 +139,6 @@
                 createPlot(checked);
             });
 
-            // Cache for song data
-            let songDataCache = null;
-
-            async function fetchSongData() {
-                if (songDataCache) return songDataCache;
-                try {
-                    const resp = await fetch('https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json');
-                    songDataCache = await resp.json();
-                    return songDataCache;
-                } catch (e) {
-                    console.error('Failed to load song data', e);
-                    return null;
-                }
-            }
-
             async function createPlot(plotType) {
                 console.log('CreatePlot -> plotType =', plotType);
                 let plotFile;
@@ -102,7 +152,7 @@
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 if (!plotJson) {
-                    // ...existing code for toast...
+                    // Create toast container if it doesn't exist
                     if (!document.getElementById('toastContainer')) {
                         const toastContainer = document.createElement('div');
                         toastContainer.id = 'toastContainer';
@@ -110,6 +160,7 @@
                         toastContainer.style.zIndex = 1080;
                         document.body.appendChild(toastContainer);
                     }
+                    // Create toast element
                     const toast = document.createElement('div');
                     toast.className = 'toast align-items-center text-bg-danger border-0 show';
                     toast.setAttribute('role', 'alert');
@@ -124,6 +175,7 @@
                         </div>
                     `;
                     document.getElementById('toastContainer').appendChild(toast);
+                    // Initialize and show the toast using Bootstrap's JS
                     if (window.bootstrap && bootstrap.Toast) {
                         new bootstrap.Toast(toast, { delay: 4000 }).show();
                     }
@@ -133,53 +185,27 @@
                 var graphLayout = plotJson.layout;
                 graphLayout['autosize'] = true;
                 graphLayout['responsive'] = true;
+                // graphLayout['height'] = 900;
+                // graphLayout['width'] = 1600;
                 graphLayout['legend'] = { 'orientation': 'v' };
+                // if (plotType == "lyrics") {
+                //     graphLayout['legend'] = false;
+                // }
                 Plotly.newPlot('plotDiv', graphData, graphLayout);
 
-                // Clear infoDiv on plot change
-                document.getElementById('infoDiv').innerHTML = '';
-
-                document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
+                document.getElementById("plotDiv").on('plotly_click', function (clickData) {
                     if (currentPlot == 'tags') return;
                     let songID = clickData.points[0].customdata[0];
                     let source = clickData.points[0].customdata[1];
-                    // Open link as before
                     if (source == 'suno') {
                         let link = `https://${source}.com/song/${songID}`;
                         window.open(link, '_blank');
                     } else if (source == 'udio') {
                         let link = `https://${source}.com/songs/${songID}`;
                         window.open(link, '_blank');
+                    } else {
+                        alert("error with link", clickData);
                     }
-                    // Show info in infoDiv
-                    let songData = await fetchSongData();
-                    if (!songData) return;
-                    // Find the row(s) matching the clicked id/source
-                    let filtered = songData.filter(row => String(row.id) === String(songID) && row.source === source);
-                    if (filtered.length === 0) {
-                        document.getElementById('infoDiv').innerHTML = '<div class="alert alert-warning">No data found for this song.</div>';
-                        return;
-                    }
-                    // Build a table of the first (or all) matching rows
-                    let html = '<div class="table-responsive"><table class="table table-sm table-bordered table-striped"><thead><tr>';
-                    for (let key of Object.keys(filtered[0])) {
-                        html += `<th>${key}</th>`;
-                    }
-                    html += '</tr></thead><tbody>';
-                    for (let row of filtered) {
-                        html += '<tr>';
-                        for (let key of Object.keys(row)) {
-                            let val = row[key];
-                            if (typeof val === 'string' && val.startsWith('http')) {
-                                html += `<td><a href="${val}" target="_blank">link</a></td>`;
-                            } else {
-                                html += `<td>${val}</td>`;
-                            }
-                        }
-                        html += '</tr>';
-                    }
-                    html += '</tbody></table></div>';
-                    document.getElementById('infoDiv').innerHTML = html;
                 });
             }
 
