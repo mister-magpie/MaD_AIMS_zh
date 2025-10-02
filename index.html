@@ -18,7 +18,7 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 m-1 py-1">
+            <div class="col-12 m-2 p-2 bg-dark text-white">
                 <h1>"Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study"</h1>
                 <p>This page contains interactive versions of the visualizations featured in the paper "Exploring
                     “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study" by Y.Zhao and L.Casini.
@@ -78,7 +78,33 @@
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 if (!plotJson) {
-                    document.getElementById('plotDiv').innerHTML = '<div class="alert alert-danger">Plot data not found.</div>';
+                    // Create toast container if it doesn't exist
+                    if (!document.getElementById('toastContainer')) {
+                        const toastContainer = document.createElement('div');
+                        toastContainer.id = 'toastContainer';
+                        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                        toastContainer.style.zIndex = 1080;
+                        document.body.appendChild(toastContainer);
+                    }
+                    // Create toast element
+                    const toast = document.createElement('div');
+                    toast.className = 'toast align-items-center text-bg-danger border-0 show';
+                    toast.setAttribute('role', 'alert');
+                    toast.setAttribute('aria-live', 'assertive');
+                    toast.setAttribute('aria-atomic', 'true');
+                    toast.innerHTML = `
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Plot data not found.
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    `;
+                    document.getElementById('toastContainer').appendChild(toast);
+                    // Initialize and show the toast using Bootstrap's JS
+                    if (window.bootstrap && bootstrap.Toast) {
+                        new bootstrap.Toast(toast, { delay: 4000 }).show();
+                    }
                     return;
                 }
                 var graphData = plotJson.data;
