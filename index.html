@@ -18,7 +18,7 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 m-1 py-1">
                 <h1>"Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study"</h1>
                 <p>This page contains interactive versions of the visualizations featured in the paper "Exploring
                     “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study" by Y.Zhao and L.Casini.
@@ -39,12 +39,12 @@
                     <hr>
                 </div>
                 <div class="col-12">
-                    <div id="plotDiv"></div>
+                    <div id="plotDiv" class="m-1"></div>
                 </div>
             </div>
         </div>
-        <script>
 
+        <script>
             // Only consider plot type, not labels
             let currentPlot = '';
 
@@ -64,6 +64,7 @@
             // Initial plot on page load
             window.addEventListener('DOMContentLoaded', function () {
                 let checked = document.querySelector('input[name="plotType"]:checked');
+                console.log('Initial plot', checked);
                 if (checked) {
                     createPlot(checked.value);
                 }
