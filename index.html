@@ -72,9 +72,13 @@
 
             async function createPlot(plotType) {
                 console.log('create plot', plotType);
-                currentPlot = plotType;
+                let plotFile;
+                if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
+                else if (plotType == 'tagscat') plotFile = 'zh_songs_lyrics';
+                else if (plotType == 'tags100') plotFile = 'zh_songs_lyrics';
+                else plotFile = null;
                 // The filename is just the plotType
-                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotType}.json`)
+                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 if (!plotJson) {
