@@ -16,6 +16,8 @@
     <!-- Grid.js (lightweight interactive tables, no jQuery) -->
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <!-- DataFrame-js -->
+    <script src="https://unpkg.com/dataframe-js@1.4.5/dist/dataframe.min.js"></script>
     <style>
     </style>
 </head>
@@ -25,7 +27,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.9</h6>
+                    <h6 class="badge bg-info">v0.10</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -110,190 +112,7 @@
             // Use site-relative path so it works on GitHub Pages and local server
             datasetURL = 'data/zh_songs.json'
 
-            // State kept so we can re-render with filters
-            let fullRows = null;
-            let fullCols = null;
 
-            // Utility: safely stringify for modal
-            function pretty(obj) {
-                try { return JSON.stringify(obj, null, 2); } catch (e) { return String(obj); }
-            }
-
-            // Open a song link if possible from a row; otherwise show modal with details
-            function openOrShowRow(rowObj) {
-                // candidate id and source field names
-                const idKeys = ['song_id', 'id', 'songId', 'songID', 'track_id'];
-                const sourceKeys = ['source', 'site', 'origin'];
-                let idVal = null, srcVal = null;
-                for (const k of idKeys) if (k in rowObj) { idVal = rowObj[k]; break; }
-                for (const k of sourceKeys) if (k in rowObj) { srcVal = rowObj[k]; break; }
-                if (idVal && srcVal) {
-                    // normalize source
-                    const s = String(srcVal).toLowerCase();
-                    let link = null;
-                    if (s.includes('suno')) link = `https://suno.com/song/${idVal}`;
-                    else if (s.includes('udio') || s.includes('udio')) link = `https://udio.com/songs/${idVal}`;
-                    else if (s.includes('youtube') || s.includes('yt')) link = String(idVal);
-                    if (link) { window.open(link, '_blank'); return; }
-                }
-                // fallback: show modal
-                document.getElementById('rowDetailPre').textContent = pretty(rowObj);
-                const modal = new bootstrap.Modal(document.getElementById('rowDetailModal'));
-                modal.show();
-            }
-
-            // Fetch, populate dropdowns, and render
-            async function renderDatasetTable() {
-                const status = document.getElementById('tableStatus');
-                const container = document.getElementById('tableContainer');
-                const columnSelect = document.getElementById('columnSelect');
-                const hdbSelect = document.getElementById('hdbSelect');
-                if (!container) return;
-                status.textContent = 'Loading dataset...';
-                try {
-                    const res = await fetch(datasetURL);
-                    console.log('Fetching dataset from', datasetURL, res);
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const json = await res.json();
-                    console.log('Dataset loaded', json);
-
-                    // If the JSON root is an array, use its elements as rows.
-                    // If it's an object, set rows to all top-level keys (as requested) and
-                    // build fullRows as objects { _key: key, ...valueFields } so we can render a table.
-                    let rows = null;
-                    let rowsAreKeys = false;
-                    if (Array.isArray(json)) {
-                        rows = json;
-                    } else if (json && typeof json === 'object') {
-                        // Use all top-level keys as rows (user requested behaviour)
-                        rows = Object.keys(json);
-                        rowsAreKeys = true;
-                    }
-                    if (!rows) throw new Error('No data found in the JSON payload');
-                    if (rows.length === 0) { status.textContent = 'Dataset is empty.'; return; }
-
-                    // Build fullRows as an array of objects for uniform downstream handling.
-                    if (rowsAreKeys) {
-                        fullRows = rows.map(k => {
-                            const v = json[k];
-                            if (v && typeof v === 'object' && !Array.isArray(v)) {
-                                return Object.assign({ '_key': k }, v);
-                            } else {
-                                return { '_key': k, 'value': v };
-                            }
-                        });
-                    } else {
-                        fullRows = rows;
-                    }
-
-                    // Columns derived from the first constructed row
-                    const first = fullRows[0];
-                    const cols = Object.keys(first);
-                    fullCols = cols;
-
-                    // Populate columnSelect
-                    columnSelect.innerHTML = '<option value="__all__">All columns</option>' + cols.map(c => `<option value="${c}">${c}</option>`).join('');
-
-                    // Populate hdbSelect from distinct hdb_label values (if present)
-                    const hdbVals = new Set();
-                    for (const r of rows) {
-                        if ('hdb_label' in r && r.hdb_label !== null && r.hdb_label !== undefined) hdbVals.add(String(r.hdb_label));
-                    }
-                    const hdbOpts = ['<option value="__all__">All hdb_label</option>'];
-                    for (const v of Array.from(hdbVals).sort()) hdbOpts.push(`<option value="${v}">${v}</option>`);
-                    hdbSelect.innerHTML = hdbOpts.join('');
-
-                    // Attach change handlers
-                    columnSelect.onchange = () => drawGrid();
-                    hdbSelect.onchange = () => drawGrid();
-
-                    // Initial draw
-                    drawGrid();
-
-                    function drawGrid() {
-                        const colChoice = columnSelect.value;
-                        const hdbChoice = hdbSelect.value;
-                        // Apply filter
-                        let filtered = fullRows;
-                        if (hdbChoice && hdbChoice !== '__all__') {
-                            filtered = filtered.filter(r => String(r.hdb_label) === hdbChoice);
-                        }
-
-                        // Build columns for Grid.js
-                        let useCols = fullCols;
-                        if (colChoice && colChoice !== '__all__') useCols = [colChoice];
-
-                        const gridColumns = useCols.map(col => ({
-                            id: col,
-                            name: col,
-                            formatter: gridjs.html((cell) => {
-                                if (cell === null || cell === undefined) return '';
-                                let text = String(cell);
-                                if (text.length > 200) {
-                                    const short = text.slice(0, 200) + '…';
-                                    const escFull = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-                                    return `<span title="${escFull}">${short.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</span>`;
-                                }
-                                return String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-                            })
-                        }));
-
-                        // Add an action column with Open / Details
-                        gridColumns.push({
-                            id: '__actions__', name: 'Actions', formatter: gridjs.html((_, row) => {
-                                // row.cells -> array of cell values matching useCols
-                                // We'll put data-rowindex to map back to original filtered index
-                                const idx = row.cellsIndex;
-                                return `<div class="btn-group" role="group"><button class="btn btn-sm btn-outline-primary open-btn" data-idx="${idx}">Open</button><button class="btn btn-sm btn-outline-secondary detail-btn" data-idx="${idx}">Details</button></div>`;
-                            })
-                        });
-
-                        // Prepare data rows as arrays
-                        const gridData = filtered.map(r => useCols.map(c => (r[c] === undefined ? '' : r[c])));
-
-                        container.innerHTML = '';
-                        const grid = new gridjs.Grid({
-                            columns: gridColumns,
-                            data: gridData,
-                            search: true,
-                            pagination: { enabled: true, limit: 25, summary: true },
-                            sort: true,
-                            style: { table: { 'table-layout': 'auto' } }
-                        }).render(container);
-
-                        // After render attach event handlers for action buttons
-                        // Buttons are inside the container; find them by class
-                        setTimeout(() => {
-                            const openBtns = container.querySelectorAll('.open-btn');
-                            const detailBtns = container.querySelectorAll('.detail-btn');
-                            openBtns.forEach(b => b.onclick = (e) => {
-                                const idx = Number(e.currentTarget.getAttribute('data-idx'));
-                                const rowObj = filtered[idx];
-                                openOrShowRow(rowObj);
-                            });
-                            detailBtns.forEach(b => b.onclick = (e) => {
-                                const idx = Number(e.currentTarget.getAttribute('data-idx'));
-                                const rowObj = filtered[idx];
-                                document.getElementById('rowDetailPre').textContent = pretty(rowObj);
-                                const modal = new bootstrap.Modal(document.getElementById('rowDetailModal'));
-                                modal.show();
-                            });
-                        }, 50);
-
-                        status.textContent = `Showing ${filtered.length} rows (${fullRows.length} total).`;
-                    }
-
-                } catch (err) {
-                    console.error(err);
-                    status.textContent = 'Error loading dataset: ' + err.message;
-                }
-            }
-
-            // Run after DOM loaded
-            window.addEventListener('DOMContentLoaded', function () {
-                const infoDiv = document.getElementById('infoDiv');
-                if (infoDiv) renderDatasetTable();
-            });
         </script>
 
         <script>
@@ -308,99 +127,119 @@
                     createPlot(plotTypeValue);
                 });
             });
+        </script>
 
-            // Initial plot on page load
-            window.addEventListener('DOMContentLoaded', function () {
-                let checked = document.querySelector('input[name="plotType"]:checked').value;
-                console.log('Initial plot', checked);
-                createPlot(checked);
-            });
+        <script>
+            // Use site-relative path so it works on GitHub Pages and local server
+            const datasetURL = 'data/zh_songs.json'
 
-            async function createPlot(plotType) {
-                console.log('CreatePlot -> plotType =', plotType);
-                let plotFile;
-                if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
-                else if (plotType == 'tagscat') plotFile = 'zh_songs_tags_cat';
-                else if (plotType == 'tags100') plotFile = 'zh_songs_tags_top100';
-                else plotFile = null;
-                console.log('plotFile:', plotFile);
-                // The filename is just the plotType
-                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
-                    .then(response => response.json())
-                    .catch(error => { console.error(error); return null; });
-                if (!plotJson) {
-                    // Create toast container if it doesn't exist
-                    if (!document.getElementById('toastContainer')) {
-                        const toastContainer = document.createElement('div');
-                        toastContainer.id = 'toastContainer';
-                        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
-                        toastContainer.style.zIndex = 1080;
-                        document.body.appendChild(toastContainer);
-                    }
-                    // Create toast element
-                    const toast = document.createElement('div');
-                    toast.className = 'toast align-items-center text-bg-danger border-0 show';
-                    toast.setAttribute('role', 'alert');
-                    toast.setAttribute('aria-live', 'assertive');
-                    toast.setAttribute('aria-atomic', 'true');
-                    toast.innerHTML = `
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                Plot data not found.
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    `;
-                    document.getElementById('toastContainer').appendChild(toast);
-                    // Initialize and show the toast using Bootstrap's JS
-                    if (window.bootstrap && bootstrap.Toast) {
-                        new bootstrap.Toast(toast, { delay: 4000 }).show();
-                    }
-                    return;
+            let df = null; // DataFrame-js instance
+
+            // Utility to pretty-print
+            function pretty(obj) { try { return JSON.stringify(obj, null, 2); } catch (e) { return String(obj); } }
+
+            // Render HTML table from an array of objects and columns
+            function renderHtmlTable(container, rows, cols, maxRows = 500) {
+                container.innerHTML = '';
+                const table = document.createElement('table');
+                table.className = 'table table-sm table-striped table-bordered';
+                const thead = document.createElement('thead');
+                const tr = document.createElement('tr');
+                for (const c of cols) {
+                    const th = document.createElement('th'); th.textContent = c; tr.appendChild(th);
                 }
-                var graphData = plotJson.data;
-                var graphLayout = plotJson.layout;
-                graphLayout['autosize'] = true;
-                graphLayout['responsive'] = true;
-                // graphLayout['height'] = 900;
-                // graphLayout['width'] = 1600;
-                graphLayout['showlegend'] = true;
-                graphLayout['legend'] = { 'orientation': 'v' };
-                // if (plotType == "lyrics") {
-                //     graphLayout['legend'] = false;
-                // }
-                Plotly.newPlot('plotDiv', graphData, graphLayout);
-
-                document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
-                    if (currentPlot == 'tags') return;
-                    let songID = clickData.points[0].customdata[0];
-                    let source = clickData.points[0].customdata[1];
-                    if (source == 'suno') {
-                        let link = `https://${source}.com/song/${songID}`;
-                        window.open(link, '_blank');
-                    } else if (source == 'udio') {
-                        let link = `https://${source}.com/songs/${songID}`;
-                        window.open(link, '_blank');
-                    } else {
-                        alert("error with link", clickData);
+                thead.appendChild(tr); table.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                const limited = rows.slice(0, maxRows);
+                for (const r of limited) {
+                    const tr = document.createElement('tr');
+                    for (const c of cols) {
+                        const td = document.createElement('td');
+                        let v = r[c];
+                        if (v === null || v === undefined) v = '';
+                        else if (typeof v === 'object') v = pretty(v);
+                        td.textContent = String(v);
+                        tr.appendChild(td);
                     }
-                    // Show infoDiv when a point is clicked
-                    const infoDiv = document.getElementById('infoDiv');
-                    infoDiv.style.display = 'block';
-                    // populate infoDiv if cluster selection dropdown exists
-                    const clusterSelect = document.getElementById('clusterSelect');
-                    if (clusterSelect) {
-                        clusterSelect.value = clickData.points[0].customdata[2] || clusterSelect.value;
-                    }
-                });
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                container.appendChild(table);
+                if (rows.length > maxRows) {
+                    const note = document.createElement('div'); note.className = 'small text-muted';
+                    note.textContent = `(showing first ${maxRows} of ${rows.length} rows)`;
+                    container.appendChild(note);
+                }
             }
 
+            async function loadAndBuild() {
+                const status = document.getElementById('tableStatus');
+                const container = document.getElementById('tableContainer');
+                const columnSelect = document.getElementById('columnSelect');
+                const hdbSelect = document.getElementById('hdbSelect');
+                status.textContent = 'Loading...';
+                try {
+                    const res = await fetch(datasetURL);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const raw = await res.json();
 
+                    // If root is array, use it. If object, use keys as rows as requested earlier.
+                    let rows = null;
+                    if (Array.isArray(raw)) rows = raw;
+                    else if (raw && typeof raw === 'object') {
+                        // rows are top-level keys -> convert to objects
+                        rows = Object.keys(raw).map(k => {
+                            const v = raw[k];
+                            if (v && typeof v === 'object' && !Array.isArray(v)) return Object.assign({ '_key': k }, v);
+                            return { '_key': k, 'value': v };
+                        });
+                    } else {
+                        throw new Error('Unexpected JSON structure');
+                    }
 
+                    // Create DataFrame
+                    df = new DataFrameJs.DataFrame(rows);
+
+                    // Populate column dropdown
+                    const cols = df.listColumns();
+                    columnSelect.innerHTML = '<option value="__all__">All columns</option>' + cols.map(c => `<option value="${c}">${c}</option>`).join('');
+
+                    // Populate hdb_label dropdown
+                    const hdbVals = Array.from(new Set(df.toArray().map(r => r[df.listColumns().indexOf('hdb_label')]))).filter(v => v !== undefined && v !== null).map(String).sort();
+                    hdbSelect.innerHTML = '<option value="__all__">All hdb_label</option>' + hdbVals.map(v => `<option value="${v}">${v}</option>`).join('');
+
+                    // Handlers
+                    columnSelect.onchange = updateTable;
+                    hdbSelect.onchange = updateTable;
+
+                    // Initial render
+                    updateTable();
+
+                    function updateTable() {
+                        const colChoice = columnSelect.value;
+                        const hdbChoice = hdbSelect.value;
+                        let filtered = df;
+                        if (hdbChoice && hdbChoice !== '__all__' && df.listColumns().includes('hdb_label')) {
+                            filtered = filtered.filter(row => String(row.get('hdb_label')) === hdbChoice);
+                        }
+                        let outCols = filtered.listColumns();
+                        if (colChoice && colChoice !== '__all__') outCols = [colChoice];
+                        // Get rows as array of objects
+                        const rowsOut = filtered.toCollection();
+                        // Render
+                        renderHtmlTable(container, rowsOut, outCols, 500);
+                        status.textContent = `Showing ${rowsOut.length} rows`;
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    status.textContent = 'Error: ' + err.message;
+                }
+            }
+
+            // Start once DOM loads
+            window.addEventListener('DOMContentLoaded', () => {
+                const infoDiv = document.getElementById('infoDiv');
+                if (infoDiv) loadAndBuild();
+            });
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-            crossorigin="anonymous"></script>
-</body>
-
-</html>
