@@ -121,7 +121,8 @@
                     document.getElementById('columnSelect').appendChild(option);
                 });
 
-                hdb_labels = df.array('hdb_label').distinct().sort();
+                // select unique hdb_labels and sort them
+                hdb_labels = df.select('hdb_label').distinct().arrange('hdb_label').array('hdb_label');
                 console.log('Distinct hdb_labels:', hdb_labels);
                 qwen_labels = []
                 hdb_labels.forEach(label => {
