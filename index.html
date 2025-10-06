@@ -61,11 +61,59 @@
         </div>
 
         <script>
+
+            data = null;
+
             // on click of showClustersBtn, toggle display of infoDiv
             document.getElementById('showClustersBtn').addEventListener('click', function () {
                 const infoDiv = document.getElementById('infoDiv');
                 if (infoDiv.style.display === 'none' || infoDiv.style.display === '') {
                     infoDiv.style.display = 'block';
+                    // if data is null, fetch dataset 
+                    if (!data) {
+                        fetchDataset().then(dataset => {
+                            data = dataset;
+                            let columns = getColumnNames(data);
+                            // create a dropdown to select cluster number
+                            let clusterSelect = document.createElement('select');
+                            clusterSelect.id = 'clusterSelect';
+                            clusterSelect.className = 'form-select w-auto mb-3';
+                            // get unique cluster numbers from data
+                            let clusters = [...new Set(data.map(item => item.cluster))].sort((a, b) => a - b);
+                            clusters.forEach(cluster => {
+                                let option = document.createElement('option');
+                                option.value = cluster;
+                                option.text = `Cluster ${cluster}`;
+                                clusterSelect.appendChild(option);
+                            });
+                            // add event listener to clusterSelect to update infoDiv on change
+                            clusterSelect.addEventListener('change', function () {
+                                let selectedCluster = this.value;
+                                let clusterData = data.filter(item => item.cluster == selectedCluster);
+                                let html = `<h4>Cluster ${selectedCluster} - ${clusterData.length} songs</h4>`;
+                                html += '<ul>';
+                                clusterData.forEach(item => {
+                                    html += `<li><strong>${item.title}</strong> by ${item.artist} [${item.source}] - <a href="${item.url}" target="_blank">Link</a></li>`;
+                                });
+                                html += '</ul>';
+                                document.getElementById('clusterContents').innerHTML = html;
+                            });
+                            infoDiv.innerHTML = '<h3>Cluster Contents</h3>';
+                            infoDiv.appendChild(clusterSelect);
+                            let clusterContents = document.createElement('div');
+                            clusterContents.id = 'clusterContents';
+                            infoDiv.appendChild(clusterContents);
+                            // trigger change event to populate initial contents
+                            clusterSelect.dispatchEvent(new Event('change'));
+                        });
+                    } else {
+                        // if data already fetched, just show current selected cluster
+                        const clusterSelect = document.getElementById('clusterSelect');
+                        if (clusterSelect) {
+                            clusterSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
+
                 } else {
                     infoDiv.style.display = 'none';
                 }
