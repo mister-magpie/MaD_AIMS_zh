@@ -114,6 +114,7 @@
                 console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
                 df.df_columns.forEach(col => {
+                    console.log(col)
                     const option = document.createElement('option');
                     option.value = col;
                     option.textContent = col;
