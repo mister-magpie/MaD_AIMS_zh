@@ -130,7 +130,7 @@
             // create a function that extracts all column names from dataset
             function getColumnNames(dataset) {
                 if (!dataset || dataset.length === 0) return [];
-                let columns = Object.keys(dataset[0]);
+                let columns = Object.keys(dataset);
                 console.log('Columns:', columns);
                 return columns;
             }
