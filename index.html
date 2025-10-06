@@ -108,7 +108,9 @@
         <script>
             // var DataFrame = dfjs.DataFrame;
             // Use site-relative path so it works on GitHub Pages and local server
-            datasetURL = 'data/zh_songs.json'
+            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.json';
+            datasetPath = 'data/zh_songs.json';
+
             aq.loadJSON(datasetURL).then(function (df) {
                 console.log('DataFrame loaded:', df);
                 df_columns = df.columnNames();
