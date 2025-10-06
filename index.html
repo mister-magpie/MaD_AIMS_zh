@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.10</h6>
+                    <h6 class="badge bg-info">v0.11</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -111,7 +111,7 @@
             datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.csv';
             datasetPath = 'data/zh_songs.csv';
 
-            aq.loadJSON(datasetURL, delimiter = '\t').then(function (df) {
+            aq.loadJSON(datasetURL, delimiter = ';').then(function (df) {
                 console.log('DataFrame loaded:', df);
                 df_columns = df.columnNames();
                 console.log('DataFrame columns:', df_columns);
