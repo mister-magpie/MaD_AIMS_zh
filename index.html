@@ -44,13 +44,16 @@
                         <input type="radio" class="btn-check" name="plotType" id="plotType_prompt" autocomplete="off"
                             value="tags100">
                         <label class="btn btn-outline-primary" for="plotType_prompt">Top 100 Tags</label>
+                        <!-- Button to show cluster contents -->
+                        <button id="showClustersBtn" type="button" class="btn btn-outline-secondary"
+                            title="Show cluster contents">Cluster Contents</button>
                     </div>
                     <hr>
                 </div>
                 <div class="col-12">
                     <div id="plotDiv" class="my-3"></div>
                 </div>
-                <div id="infoDiv" class="col-12 border-1">
+                <div id="infoDiv" class="col-12 border-1" style="display:none">
                     <h3>Cluster Contents</h3>
 
                 </div>
@@ -78,6 +81,7 @@
 
             data = loadData();
             if (data) {
+                console.log("creating dropdown for cols")
                 // create a dropdown inside infoDiv to select a column of data
                 const dropdown = document.createElement('select');
                 dropdown.className = 'form-select';
@@ -94,6 +98,7 @@
                 // Add dropdown to infoDiv
                 document.getElementById('infoDiv').appendChild(dropdown);
 
+                console.log("creating dropdown for clusters")
                 // create a dropdown inside infoDiv to select a cluster
                 const clusterDropdown = document.createElement('select');
                 clusterDropdown.className = 'form-select mt-2';
@@ -187,7 +192,7 @@
                 // }
                 Plotly.newPlot('plotDiv', graphData, graphLayout);
 
-                document.getElementById("plotDiv").on('plotly_click', function (clickData) {
+                document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
                     if (currentPlot == 'tags') return;
                     let songID = clickData.points[0].customdata[0];
                     let source = clickData.points[0].customdata[1];
@@ -199,6 +204,14 @@
                         window.open(link, '_blank');
                     } else {
                         alert("error with link", clickData);
+                    }
+                    // Show infoDiv when a point is clicked
+                    const infoDiv = document.getElementById('infoDiv');
+                    infoDiv.style.display = 'block';
+                    // populate infoDiv if cluster selection dropdown exists
+                    const clusterSelect = document.getElementById('clusterSelect');
+                    if (clusterSelect) {
+                        clusterSelect.value = clickData.points[0].customdata[2] || clusterSelect.value;
                     }
                 });
             }
