@@ -16,8 +16,8 @@
     <!-- Grid.js (lightweight interactive tables, no jQuery) -->
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
-    <!-- DataFrame-js -->
-    <script src="https://unpkg.com/dataframe-js@1.4.5/dist/dataframe.min.js"></script>
+    <!-- dataframe-js for client-side dataframes -->
+    <script src="https://cdn.jsdelivr.net/npm/dataframe-js/dist/dataframe.min.js"></script>
     <style>
     </style>
 </head>
@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.10</h6>
+                    <h6 class="badge bg-info">v0.11</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -116,6 +116,138 @@
         </script>
 
         <script>
+            // dataframe-js driven table logic
+            // Steps with console logging at each stage
+            let DFGlobal = null;      // dataframe-js DataFrame class
+            let dfGlobal = null;      // loaded DataFrame
+            let dfColumns = [];       // column names
+
+            async function loadWithDataFrameJS() {
+                console.log('[DFJS] Step 1: Resolve DataFrame class');
+                DFGlobal = (window.dfjs && window.dfjs.DataFrame) || window.DataFrame;
+                if (!DFGlobal) {
+                    console.error('[DFJS] dataframe-js not found on window.');
+                    return;
+                }
+
+                console.log('[DFJS] Step 2: Load JSON using DataFrame.fromJSON:', datasetURL);
+                try {
+                    // Use fromJSON as requested; it should return a Promise<DataFrame>
+                    dfGlobal = await DFGlobal.fromJSON(datasetURL);
+                } catch (e) {
+                    console.warn('[DFJS] fromJSON(datasetURL) failed, trying to fetch and pass object:', e);
+                    // Fallback: fetch manually, then try fromJSON with object/string, else use constructor
+                    const res = await fetch(datasetURL);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const jsonObj = await res.json();
+                    try {
+                        dfGlobal = await DFGlobal.fromJSON(jsonObj);
+                    } catch (e2) {
+                        console.warn('[DFJS] fromJSON(object) failed, trying string:', e2);
+                        try {
+                            dfGlobal = await DFGlobal.fromJSON(JSON.stringify(jsonObj));
+                        } catch (e3) {
+                            console.warn('[DFJS] fromJSON(string) failed, using constructor fallback:', e3);
+                            dfGlobal = new DFGlobal(Array.isArray(jsonObj) ? jsonObj : Object.keys(jsonObj).map(k => ({ _key: k, value: jsonObj[k] })));
+                        }
+                    }
+                }
+
+                if (!dfGlobal) {
+                    console.error('[DFJS] Failed to create DataFrame.');
+                    return;
+                }
+                console.log('[DFJS] Step 3: DataFrame created. Columns =>', dfGlobal.listColumns ? dfGlobal.listColumns() : '(unknown)');
+
+                // Prepare UI elements
+                const columnSelect = document.getElementById('columnSelect');
+                const hdbSelect = document.getElementById('hdbSelect');
+                const container = document.getElementById('tableContainer');
+                const status = document.getElementById('tableStatus');
+
+                console.log('[DFJS] Step 4: Extract columns and distinct hdb_label');
+                dfColumns = dfGlobal.listColumns ? dfGlobal.listColumns() : [];
+                console.log('[DFJS] Columns:', dfColumns);
+                columnSelect.innerHTML = '<option value="__all__">All columns</option>' + dfColumns.map(c => `<option value="${c}">${c}</option>`).join('');
+
+                // Compute distinct hdb_label values
+                let hdbValues = [];
+                try {
+                    const collection = typeof dfGlobal.toCollection === 'function' ? dfGlobal.toCollection() : [];
+                    const setVals = new Set(collection.map(r => r.hdb_label).filter(v => v !== null && v !== undefined));
+                    hdbValues = Array.from(setVals).map(v => String(v)).sort();
+                } catch (e) {
+                    console.warn('[DFJS] Could not compute hdb_label distinct values:', e);
+                }
+                hdbSelect.innerHTML = ['<option value="__all__">All hdb_label</option>'].concat(hdbValues.map(v => `<option value="${v}">${v}</option>`)).join('');
+                console.log('[DFJS] hdb_label values:', hdbValues);
+
+                // Hook events
+                columnSelect.onchange = () => { console.log('[DFJS] columnSelect changed to', columnSelect.value); drawTable(); };
+                hdbSelect.onchange = () => { console.log('[DFJS] hdbSelect changed to', hdbSelect.value); drawTable(); };
+
+                console.log('[DFJS] Step 5: Initial draw');
+                drawTable();
+
+                function drawTable() {
+                    console.log('[DFJS] Step 6: drawTable start');
+                    const colChoice = columnSelect.value;
+                    const hdbChoice = hdbSelect.value;
+                    console.log('[DFJS] Current selections => column:', colChoice, 'hdb_label:', hdbChoice);
+
+                    let dfWork = dfGlobal;
+                    // Filter by hdb_label when selected
+                    if (hdbChoice && hdbChoice !== '__all__') {
+                        try {
+                            dfWork = dfWork.filter(row => String(row.get('hdb_label')) === String(hdbChoice));
+                        } catch (e) {
+                            console.warn('[DFJS] Filter by hdb_label failed:', e);
+                        }
+                    }
+
+                    // Select single column or all
+                    let useCols = dfColumns;
+                    if (colChoice && colChoice !== '__all__') {
+                        useCols = [colChoice];
+                        try { dfWork = dfWork.select(colChoice); } catch (e) { console.warn('[DFJS] select() failed:', e); }
+                    }
+
+                    // Convert to collection for rendering
+                    let rows = [];
+                    try { rows = dfWork.toCollection(); } catch (e) { console.warn('[DFJS] toCollection failed:', e); }
+                    console.log('[DFJS] Rows after filter/select:', rows.length, 'columns:', useCols);
+
+                    // Render simple HTML table
+                    container.innerHTML = '';
+                    const table = document.createElement('table');
+                    table.className = 'table table-sm table-striped table-hover';
+                    const thead = document.createElement('thead');
+                    const trh = document.createElement('tr');
+                    useCols.forEach(c => { const th = document.createElement('th'); th.textContent = c; trh.appendChild(th); });
+                    thead.appendChild(trh);
+                    table.appendChild(thead);
+                    const tbody = document.createElement('tbody');
+                    rows.forEach(r => {
+                        const tr = document.createElement('tr');
+                        useCols.forEach(c => { const td = document.createElement('td'); const v = r[c]; td.textContent = (v == null) ? '' : String(v); tr.appendChild(td); });
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    container.appendChild(table);
+
+                    status.textContent = `Showing ${rows.length} rows` + (hdbChoice && hdbChoice !== '__all__' ? ` for hdb_label=${hdbChoice}` : '') + '.';
+                    console.log('[DFJS] Step 7: drawTable complete');
+                }
+            }
+
+            // Kick off after DOM
+            window.addEventListener('DOMContentLoaded', () => {
+                console.log('[DFJS] DOMContentLoaded - initializing DataFrame workflow');
+                loadWithDataFrameJS();
+            });
+        </script>
+
+        <script>
             // Only consider plot type, not labels
             let currentPlot = '';
 
@@ -127,119 +259,99 @@
                     createPlot(plotTypeValue);
                 });
             });
-        </script>
 
-        <script>
-            // Use site-relative path so it works on GitHub Pages and local server
-            const datasetURL = 'data/zh_songs.json'
-
-            let df = null; // DataFrame-js instance
-
-            // Utility to pretty-print
-            function pretty(obj) { try { return JSON.stringify(obj, null, 2); } catch (e) { return String(obj); } }
-
-            // Render HTML table from an array of objects and columns
-            function renderHtmlTable(container, rows, cols, maxRows = 500) {
-                container.innerHTML = '';
-                const table = document.createElement('table');
-                table.className = 'table table-sm table-striped table-bordered';
-                const thead = document.createElement('thead');
-                const tr = document.createElement('tr');
-                for (const c of cols) {
-                    const th = document.createElement('th'); th.textContent = c; tr.appendChild(th);
-                }
-                thead.appendChild(tr); table.appendChild(thead);
-                const tbody = document.createElement('tbody');
-                const limited = rows.slice(0, maxRows);
-                for (const r of limited) {
-                    const tr = document.createElement('tr');
-                    for (const c of cols) {
-                        const td = document.createElement('td');
-                        let v = r[c];
-                        if (v === null || v === undefined) v = '';
-                        else if (typeof v === 'object') v = pretty(v);
-                        td.textContent = String(v);
-                        tr.appendChild(td);
-                    }
-                    tbody.appendChild(tr);
-                }
-                table.appendChild(tbody);
-                container.appendChild(table);
-                if (rows.length > maxRows) {
-                    const note = document.createElement('div'); note.className = 'small text-muted';
-                    note.textContent = `(showing first ${maxRows} of ${rows.length} rows)`;
-                    container.appendChild(note);
-                }
-            }
-
-            async function loadAndBuild() {
-                const status = document.getElementById('tableStatus');
-                const container = document.getElementById('tableContainer');
-                const columnSelect = document.getElementById('columnSelect');
-                const hdbSelect = document.getElementById('hdbSelect');
-                status.textContent = 'Loading...';
-                try {
-                    const res = await fetch(datasetURL);
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const raw = await res.json();
-
-                    // If root is array, use it. If object, use keys as rows as requested earlier.
-                    let rows = null;
-                    if (Array.isArray(raw)) rows = raw;
-                    else if (raw && typeof raw === 'object') {
-                        // rows are top-level keys -> convert to objects
-                        rows = Object.keys(raw).map(k => {
-                            const v = raw[k];
-                            if (v && typeof v === 'object' && !Array.isArray(v)) return Object.assign({ '_key': k }, v);
-                            return { '_key': k, 'value': v };
-                        });
-                    } else {
-                        throw new Error('Unexpected JSON structure');
-                    }
-
-                    // Create DataFrame
-                    df = new DataFrameJs.DataFrame(rows);
-
-                    // Populate column dropdown
-                    const cols = df.listColumns();
-                    columnSelect.innerHTML = '<option value="__all__">All columns</option>' + cols.map(c => `<option value="${c}">${c}</option>`).join('');
-
-                    // Populate hdb_label dropdown
-                    const hdbVals = Array.from(new Set(df.toArray().map(r => r[df.listColumns().indexOf('hdb_label')]))).filter(v => v !== undefined && v !== null).map(String).sort();
-                    hdbSelect.innerHTML = '<option value="__all__">All hdb_label</option>' + hdbVals.map(v => `<option value="${v}">${v}</option>`).join('');
-
-                    // Handlers
-                    columnSelect.onchange = updateTable;
-                    hdbSelect.onchange = updateTable;
-
-                    // Initial render
-                    updateTable();
-
-                    function updateTable() {
-                        const colChoice = columnSelect.value;
-                        const hdbChoice = hdbSelect.value;
-                        let filtered = df;
-                        if (hdbChoice && hdbChoice !== '__all__' && df.listColumns().includes('hdb_label')) {
-                            filtered = filtered.filter(row => String(row.get('hdb_label')) === hdbChoice);
-                        }
-                        let outCols = filtered.listColumns();
-                        if (colChoice && colChoice !== '__all__') outCols = [colChoice];
-                        // Get rows as array of objects
-                        const rowsOut = filtered.toCollection();
-                        // Render
-                        renderHtmlTable(container, rowsOut, outCols, 500);
-                        status.textContent = `Showing ${rowsOut.length} rows`;
-                    }
-
-                } catch (err) {
-                    console.error(err);
-                    status.textContent = 'Error: ' + err.message;
-                }
-            }
-
-            // Start once DOM loads
-            window.addEventListener('DOMContentLoaded', () => {
-                const infoDiv = document.getElementById('infoDiv');
-                if (infoDiv) loadAndBuild();
+            // Initial plot on page load
+            window.addEventListener('DOMContentLoaded', function () {
+                let checked = document.querySelector('input[name="plotType"]:checked').value;
+                console.log('Initial plot', checked);
+                createPlot(checked);
             });
+
+            async function createPlot(plotType) {
+                console.log('CreatePlot -> plotType =', plotType);
+                let plotFile;
+                if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
+                else if (plotType == 'tagscat') plotFile = 'zh_songs_tags_cat';
+                else if (plotType == 'tags100') plotFile = 'zh_songs_tags_top100';
+                else plotFile = null;
+                console.log('plotFile:', plotFile);
+                // The filename is just the plotType
+                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
+                    .then(response => response.json())
+                    .catch(error => { console.error(error); return null; });
+                if (!plotJson) {
+                    // Create toast container if it doesn't exist
+                    if (!document.getElementById('toastContainer')) {
+                        const toastContainer = document.createElement('div');
+                        toastContainer.id = 'toastContainer';
+                        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                        toastContainer.style.zIndex = 1080;
+                        document.body.appendChild(toastContainer);
+                    }
+                    // Create toast element
+                    const toast = document.createElement('div');
+                    toast.className = 'toast align-items-center text-bg-danger border-0 show';
+                    toast.setAttribute('role', 'alert');
+                    toast.setAttribute('aria-live', 'assertive');
+                    toast.setAttribute('aria-atomic', 'true');
+                    toast.innerHTML = `
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Plot data not found.
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    `;
+                    document.getElementById('toastContainer').appendChild(toast);
+                    // Initialize and show the toast using Bootstrap's JS
+                    if (window.bootstrap && bootstrap.Toast) {
+                        new bootstrap.Toast(toast, { delay: 4000 }).show();
+                    }
+                    return;
+                }
+                var graphData = plotJson.data;
+                var graphLayout = plotJson.layout;
+                graphLayout['autosize'] = true;
+                graphLayout['responsive'] = true;
+                // graphLayout['height'] = 900;
+                // graphLayout['width'] = 1600;
+                graphLayout['showlegend'] = true;
+                graphLayout['legend'] = { 'orientation': 'v' };
+                // if (plotType == "lyrics") {
+                //     graphLayout['legend'] = false;
+                // }
+                Plotly.newPlot('plotDiv', graphData, graphLayout);
+
+                document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
+                    if (currentPlot == 'tags') return;
+                    let songID = clickData.points[0].customdata[0];
+                    let source = clickData.points[0].customdata[1];
+                    if (source == 'suno') {
+                        let link = `https://${source}.com/song/${songID}`;
+                        window.open(link, '_blank');
+                    } else if (source == 'udio') {
+                        let link = `https://${source}.com/songs/${songID}`;
+                        window.open(link, '_blank');
+                    } else {
+                        alert("error with link", clickData);
+                    }
+                    // Show infoDiv when a point is clicked
+                    const infoDiv = document.getElementById('infoDiv');
+                    infoDiv.style.display = 'block';
+                    // populate infoDiv if cluster selection dropdown exists
+                    const clusterSelect = document.getElementById('clusterSelect');
+                    if (clusterSelect) {
+                        clusterSelect.value = clickData.points[0].customdata[2] || clusterSelect.value;
+                    }
+                });
+            }
+
+
+
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>
