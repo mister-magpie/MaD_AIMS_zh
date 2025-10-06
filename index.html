@@ -157,19 +157,37 @@
                     const json = await res.json();
                     console.log('Dataset loaded', json);
 
-                    // Detect array
+                    // If the JSON root is an array, use its elements as rows.
+                    // If it's an object, set rows to all top-level keys (as requested) and
+                    // build fullRows as objects { _key: key, ...valueFields } so we can render a table.
                     let rows = null;
-                    if (Array.isArray(json)) rows = json;
-                    else if (json && typeof json === 'object') {
-                        for (const key of ['data', 'rows', 'songs', 'items']) if (Array.isArray(json[key])) { rows = json[key]; break; }
-                        if (!rows) for (const k of Object.keys(json)) if (Array.isArray(json[k])) { rows = json[k]; break; }
+                    let rowsAreKeys = false;
+                    if (Array.isArray(json)) {
+                        rows = json;
+                    } else if (json && typeof json === 'object') {
+                        // Use all top-level keys as rows (user requested behaviour)
+                        rows = Object.keys(json);
+                        rowsAreKeys = true;
                     }
-                    if (!rows) throw new Error('No array found in the JSON payload');
-                    fullRows = rows;
+                    if (!rows) throw new Error('No data found in the JSON payload');
                     if (rows.length === 0) { status.textContent = 'Dataset is empty.'; return; }
 
-                    // Columns
-                    const first = rows[0];
+                    // Build fullRows as an array of objects for uniform downstream handling.
+                    if (rowsAreKeys) {
+                        fullRows = rows.map(k => {
+                            const v = json[k];
+                            if (v && typeof v === 'object' && !Array.isArray(v)) {
+                                return Object.assign({ '_key': k }, v);
+                            } else {
+                                return { '_key': k, 'value': v };
+                            }
+                        });
+                    } else {
+                        fullRows = rows;
+                    }
+
+                    // Columns derived from the first constructed row
+                    const first = fullRows[0];
                     const cols = Object.keys(first);
                     fullCols = cols;
 
