@@ -105,15 +105,41 @@
 
 
         <script>
-            var DataFrame = dfjs.DataFrame;
+            // var DataFrame = dfjs.DataFrame;
             // Use site-relative path so it works on GitHub Pages and local server
             datasetURL = 'data/zh_songs.json'
-            DataFrame.fromJSON(datasetURL).then(df => {
+            aq.loadJSON(datasetURL).then(function (df) {
                 console.log('DataFrame loaded:', df);
                 df_columns = df.listColumns();
                 console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
+                df.df_columns.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col;
+                    option.textContent = col;
+                    document.getElementById('columnSelect').appendChild(option);
+                });
+
+                hdb_labels = df.select('hdb_label').distinct().array('hdb_label').sort();
+                console.log('Distinct hdb_labels:', hdb_labels);
+                qwen_labels = []
+                hdb_labels.forEach(label => {
+                    // select qwen_hdb_name from df where hdb_label == label
+                    const labelName = df.filter(d => d.hdb_label === label).select('qwen_hdb_name').array('qwen_hdb_name')[0];
+                    // build labels with the following format `${label}) ${labelName}`
+                    qwen_labels.push(`${label}) ${labelName}`);
+                });
+                console.log('qwen_labels:', qwen_labels);
+                // Populate hdbSelect dropdown
+                qwen_labels.forEach(label => {
+                    const option = document.createElement('option');
+                    option.value = label.split(')')[0]; // use only the number as value
+                    option.textContent = label;
+                    document.getElementById('hdbSelect').appendChild(option);
+                });
             });
+
+
 
 
         </script>
