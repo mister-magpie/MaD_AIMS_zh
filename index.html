@@ -73,12 +73,19 @@
 
             // create a function that fetches the dataset
             async function fetchDataset() {
-                let dataset = await fetch('https://mister-magpie.github.io/MaD_AIMS_zh/plots/zh_songs_dataset.json')
+                let dataset = await fetch('https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.json')
                     .then(response => response.json())
                     .catch(error => { console.error(error); return null; });
                 return dataset;
             }
 
+            // create a function that extracts all column names from dataset
+            function getColumnNames(dataset) {
+                if (!dataset || dataset.length === 0) return [];
+                let columns = Object.keys(dataset[0]);
+                console.log('Columns:', columns);
+                return columns;
+            }
         </script>
 
         <script>
