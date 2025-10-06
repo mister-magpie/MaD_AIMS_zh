@@ -61,121 +61,23 @@
         </div>
 
         <script>
-            // load the data json file on page load
-            async function loadData() {
-                // dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json` --- IGNORE ---
-                let dataurl = `https://mister-magpie.github.io/MaD_AIMS_zh/data/zh_songs.json`;
-                let data = await fetch(dataurl)
+            // on click of showClustersBtn, toggle display of infoDiv
+            document.getElementById('showClustersBtn').addEventListener('click', function () {
+                const infoDiv = document.getElementById('infoDiv');
+                if (infoDiv.style.display === 'none' || infoDiv.style.display === '') {
+                    infoDiv.style.display = 'block';
+                } else {
+                    infoDiv.style.display = 'none';
+                }
+            });
+
+            // create a function that fetches the dataset
+            async function fetchDataset() {
+                let dataset = await fetch('https://mister-magpie.github.io/MaD_AIMS_zh/plots/zh_songs_dataset.json')
                     .then(response => response.json())
-                    .then(jsonData => {
-                        console.log("Data loaded:", jsonData);
-                        return jsonData;
-                    })
-                    .catch(error => {
-                        console.error("Error loading data:", error);
-                        return null;
-                    });
-                return data;
+                    .catch(error => { console.error(error); return null; });
+                return dataset;
             }
-
-
-            (async function initInfoPanel() {
-                const data = await loadData();
-                if (!data) {
-                    console.warn('No data loaded for info panel');
-                    return;
-                }
-                console.log("creating dropdown for cols")
-                // create a dropdown inside infoDiv to select a column of data
-                const dropdown = document.createElement('select');
-                dropdown.className = 'form-select';
-                dropdown.id = 'dataColumnSelect';
-
-                // Populate dropdown with keys from the data (safely)
-                const keys = Object.keys(data[0] || {});
-                keys.forEach(key => {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = key;
-                    dropdown.appendChild(option);
-                });
-
-                // Add dropdown to infoDiv
-                document.getElementById('infoDiv').appendChild(dropdown);
-
-                console.log("creating dropdown for clusters")
-                // create a dropdown inside infoDiv to select a cluster
-                const clusterDropdown = document.createElement('select');
-                clusterDropdown.className = 'form-select mt-2';
-                clusterDropdown.id = 'clusterSelect';
-                document.getElementById('infoDiv').appendChild(clusterDropdown);
-
-                // Populate cluster dropdown with unique cluster labels
-                const uniqueClusters = [...new Set((data || []).map(item => item.hdb_label))];
-                uniqueClusters.forEach(cluster => {
-                    const option = document.createElement('option');
-                    option.value = cluster;
-                    option.textContent = cluster;
-                    clusterDropdown.appendChild(option);
-                });
-
-                // Button to show the info panel
-                const showBtn = document.getElementById('showClustersBtn');
-                if (showBtn) {
-                    showBtn.addEventListener('click', () => {
-                        const infoDiv = document.getElementById('infoDiv');
-                        infoDiv.style.display = 'block';
-                        infoDiv.scrollIntoView({ behavior: 'smooth' });
-                    });
-                }
-
-                // render table function
-                function renderClusterTable(clusterValue, column) {
-                    const infoDiv = document.getElementById('infoDiv');
-                    // filter data
-                    const filtered = data.filter(d => String(d.hdb_label) === String(clusterValue));
-                    if (!filtered.length) {
-                        infoDiv.innerHTML = '<div class="alert alert-warning">No rows for this cluster.</div>';
-                        return;
-                    }
-                    // build table
-                    let html = '<div class="table-responsive"><table class="table table-sm table-bordered table-striped"><thead><tr>';
-                    // If a specific column is selected, show just that column; otherwise show a few default cols
-                    const cols = column ? [column] : Object.keys(filtered[0]).slice(0, 6);
-                    cols.forEach(c => { html += `<th>${c}</th>`; });
-                    html += '</tr></thead><tbody>';
-                    filtered.slice(0, 100).forEach(row => {
-                        html += '<tr>';
-                        cols.forEach(c => {
-                            let val = row[c];
-                            if (typeof val === 'string' && val.startsWith('http')) {
-                                html += `<td><a href="${val}" target="_blank">link</a></td>`;
-                            } else {
-                                html += `<td>${String(val === undefined ? '' : val)}</td>`;
-                            }
-                        });
-                        html += '</tr>';
-                    });
-                    html += '</tbody></table></div>';
-                    infoDiv.innerHTML = '<h3>Cluster Contents</h3>' + html;
-                }
-
-                // Wire cluster and column dropdowns to render table
-                clusterDropdown.addEventListener('change', () => {
-                    const col = document.getElementById('dataColumnSelect').value;
-                    renderClusterTable(clusterDropdown.value, col);
-                });
-                dropdown.addEventListener('change', () => {
-                    const cluster = document.getElementById('clusterSelect').value;
-                    renderClusterTable(cluster, dropdown.value);
-                });
-
-                // Optionally render the first cluster on load
-                if (uniqueClusters.length) {
-                    clusterDropdown.value = uniqueClusters[0];
-                    renderClusterTable(uniqueClusters[0], keys[0]);
-                }
-            })();
 
         </script>
 
