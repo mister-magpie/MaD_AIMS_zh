@@ -152,6 +152,7 @@
                 status.textContent = 'Loading dataset...';
                 try {
                     const res = await fetch(datasetURL);
+                    console.log('Fetching dataset from', datasetURL, res);
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     const json = await res.json();
                     console.log('Dataset loaded', json);
