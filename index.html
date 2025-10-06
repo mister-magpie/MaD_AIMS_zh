@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.9</h6>
+                    <h6 class="badge bg-info">v0.10</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -113,7 +113,7 @@
                 df_columns = df.columnNames();
                 console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
-                df.df_columns.forEach(col => {
+                df_columns.forEach(col => {
                     console.log(col)
                     const option = document.createElement('option');
                     option.value = col;
