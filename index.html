@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study"</title>
+    <!-- arquero -->
+    <script src="https://cdn.jsdelivr.net/npm/arquero@latest"></script>
     <!-- Plotly.js -->
     <!-- <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script> -->
     <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -60,80 +62,89 @@
             </div>
         </div>
 
+
         <script>
+            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.json'
+            // open json using arquero
+            let dataset = await aq.from.json(datasetURL)
+            console.log('Dataset loaded:', dataset);
+            // create a dropdown inside of #infoDiv that allows to select columns
+            const infoDiv = document.getElementById('infoDiv');
+            const columnSelectLabel = document.createElement('label');
+            columnSelectLabel.for = 'columnSelect';
+            columnSelectLabel.innerText = 'Select column to display: ';
+            const columnSelect = document.createElement('select');
+            columnSelect.id = 'columnSelect';
+            columnSelect.className = 'form-select w-auto d-inline-block mb-3';
+            // populate dropdown with column names
+            let columns = dataset.columnNames();
+            console.log('Columns:', columns);
+            columns.forEach(function (column) {
+                const option = document.createElement('option');
+                option.value = column;
+                option.text = column;
+                columnSelect.appendChild(option);
+            });
+            infoDiv.appendChild(columnSelectLabel);
+            infoDiv.appendChild(columnSelect);
 
-            data = null;
+            // create another dropdown to select the cluster number according to hdb_label column
+            const clusterSelectLabel = document.createElement('label');
+            clusterSelectLabel.for = 'clusterSelect';
+            clusterSelectLabel.innerText = ' Select cluster: ';
+            const clusterSelect = document.createElement('select');
+            clusterSelect.id = 'clusterSelect';
+            clusterSelect.className = 'form-select w-auto d-inline-block mb-3 ms-3';
+            // populate dropdown with unique values from hdb_label column
+            let uniqueClusters = dataset.array('hdb_label').filter((v, i, arr) => arr.indexOf(v) === i);
+            uniqueClusters.sort((a, b) => a - b); // sort numerically
+            uniqueClusters.forEach(function (cluster) {
+                const option = document.createElement('option');
+                option.value = cluster;
+                option.text = cluster;
+                clusterSelect.appendChild(option);
+            });
+            infoDiv.appendChild(clusterSelectLabel);
+            infoDiv.appendChild(clusterSelect);
 
-            // on click of showClustersBtn, toggle display of infoDiv
+            // on dropdown change, populate infoDiv with the selected column values for the selected cluster
+            columnSelect.addEventListener('change', updateInfoDiv);
+            clusterSelect.addEventListener('change', updateInfoDiv);
             document.getElementById('showClustersBtn').addEventListener('click', function () {
-                const infoDiv = document.getElementById('infoDiv');
-                if (infoDiv.style.display === 'none' || infoDiv.style.display === '') {
+                if (infoDiv.style.display === 'none') {
                     infoDiv.style.display = 'block';
-                    // if data is null, fetch dataset 
-                    if (!data) {
-                        fetchDataset().then(dataset => {
-                            data = dataset;
-                            let columns = getColumnNames(data);
-                            // create a dropdown to select cluster number
-                            let clusterSelect = document.createElement('select');
-                            clusterSelect.id = 'clusterSelect';
-                            clusterSelect.className = 'form-select w-auto mb-3';
-                            // get unique cluster numbers from data
-                            let clusters = [...new Set(data.map(item => item.cluster))].sort((a, b) => a - b);
-                            clusters.forEach(cluster => {
-                                let option = document.createElement('option');
-                                option.value = cluster;
-                                option.text = `Cluster ${cluster}`;
-                                clusterSelect.appendChild(option);
-                            });
-                            // add event listener to clusterSelect to update infoDiv on change
-                            clusterSelect.addEventListener('change', function () {
-                                let selectedCluster = this.value;
-                                let clusterData = data.filter(item => item.cluster == selectedCluster);
-                                let html = `<h4>Cluster ${selectedCluster} - ${clusterData.length} songs</h4>`;
-                                html += '<ul>';
-                                clusterData.forEach(item => {
-                                    html += `<li><strong>${item.title}</strong> by ${item.artist} [${item.source}] - <a href="${item.url}" target="_blank">Link</a></li>`;
-                                });
-                                html += '</ul>';
-                                document.getElementById('clusterContents').innerHTML = html;
-                            });
-                            infoDiv.innerHTML = '<h3>Cluster Contents</h3>';
-                            infoDiv.appendChild(clusterSelect);
-                            let clusterContents = document.createElement('div');
-                            clusterContents.id = 'clusterContents';
-                            infoDiv.appendChild(clusterContents);
-                            // trigger change event to populate initial contents
-                            clusterSelect.dispatchEvent(new Event('change'));
-                        });
-                    } else {
-                        // if data already fetched, just show current selected cluster
-                        const clusterSelect = document.getElementById('clusterSelect');
-                        if (clusterSelect) {
-                            clusterSelect.dispatchEvent(new Event('change'));
-                        }
-                    }
-
+                    updateInfoDiv(); // populate infoDiv when shown
                 } else {
                     infoDiv.style.display = 'none';
                 }
             });
-
-            // create a function that fetches the dataset
-            async function fetchDataset() {
-                let dataset = await fetch('https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.json')
-                    .then(response => response.json())
-                    .catch(error => { console.error(error); return null; });
-                return dataset;
+            function updateInfoDiv() {
+                const selectedColumn = columnSelect.value;
+                const selectedCluster = parseInt(clusterSelect.value);
+                console.log('Selected column:', selectedColumn);
+                console.log('Selected cluster:', selectedCluster);
+                // filter dataset by selected cluster
+                let filtered = dataset.filter(aq.escape(d => d.hdb_label === selectedCluster));
+                console.log('Filtered dataset:', filtered);
+                // get values from selected column
+                let values = filtered.array(selectedColumn);
+                console.log('Values:', values);
+                // clear previous contents except the two dropdowns
+                while (infoDiv.childNodes.length > 4) {
+                    infoDiv.removeChild(infoDiv.lastChild);
+                }
+                // create a list of values
+                const ul = document.createElement('ul');
+                ul.className = 'list-group';
+                values.forEach(function (value) {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.innerText = value;
+                    ul.appendChild(li);
+                });
+                infoDiv.appendChild(ul);
             }
 
-            // create a function that extracts all column names from dataset
-            function getColumnNames(dataset) {
-                if (!dataset || dataset.length === 0) return [];
-                let columns = Object.keys(dataset);
-                console.log('Columns:', columns);
-                return columns;
-            }
         </script>
 
         <script>
