@@ -13,6 +13,9 @@
     <!-- bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- Grid.js (lightweight interactive tables, no jQuery) -->
+    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <style>
     </style>
 </head>
@@ -57,6 +60,9 @@
                 </div>
                 <div id="infoDiv" class="col-12 border-1">
                     <h3>Cluster Contents</h3>
+                    <!-- Interactive table will be inserted here -->
+                    <div id="tableContainer" class="my-2"></div>
+                    <div id="tableStatus" class="text-muted small"></div>
 
                 </div>
             </div>
@@ -64,87 +70,111 @@
 
 
         <script>
-            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.json'
-            // open json using arquero
-            let dataset = aq.loadJSON(datasetURL)
-            console.log('Dataset loaded:', dataset);
-            // create a dropdown inside of #infoDiv that allows to select columns
-            const infoDiv = document.getElementById('infoDiv');
-            const columnSelectLabel = document.createElement('label');
-            columnSelectLabel.for = 'columnSelect';
-            columnSelectLabel.innerText = 'Select column to display: ';
-            const columnSelect = document.createElement('select');
-            columnSelect.id = 'columnSelect';
-            columnSelect.className = 'form-select w-auto d-inline-block mb-3';
-            // populate dropdown with column names
-            let columns = dataset.columnNames();
-            console.log('Columns:', columns);
-            columns.forEach(function (column) {
-                const option = document.createElement('option');
-                option.value = column;
-                option.text = column;
-                columnSelect.appendChild(option);
-            });
-            infoDiv.appendChild(columnSelectLabel);
-            infoDiv.appendChild(columnSelect);
+            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/master/data/zh_songs.json'
 
-            // create another dropdown to select the cluster number according to hdb_label column
-            const clusterSelectLabel = document.createElement('label');
-            clusterSelectLabel.for = 'clusterSelect';
-            clusterSelectLabel.innerText = ' Select cluster: ';
-            const clusterSelect = document.createElement('select');
-            clusterSelect.id = 'clusterSelect';
-            clusterSelect.className = 'form-select w-auto d-inline-block mb-3 ms-3';
-            // populate dropdown with unique values from hdb_label column
-            let uniqueClusters = dataset.array('hdb_label').filter((v, i, arr) => arr.indexOf(v) === i);
-            uniqueClusters.sort((a, b) => a - b); // sort numerically
-            uniqueClusters.forEach(function (cluster) {
-                const option = document.createElement('option');
-                option.value = cluster;
-                option.text = cluster;
-                clusterSelect.appendChild(option);
-            });
-            infoDiv.appendChild(clusterSelectLabel);
-            infoDiv.appendChild(clusterSelect);
 
-            // on dropdown change, populate infoDiv with the selected column values for the selected cluster
-            columnSelect.addEventListener('change', updateInfoDiv);
-            clusterSelect.addEventListener('change', updateInfoDiv);
-            document.getElementById('showClustersBtn').addEventListener('click', function () {
-                if (infoDiv.style.display === 'none') {
-                    infoDiv.style.display = 'block';
-                    updateInfoDiv(); // populate infoDiv when shown
-                } else {
-                    infoDiv.style.display = 'none';
+
+        </script>
+
+        <script>
+            // Fetch the JSON dataset at datasetURL and render an interactive table inside #tableContainer
+            async function renderDatasetTable() {
+                const status = document.getElementById('tableStatus');
+                const container = document.getElementById('tableContainer');
+                if (!container) return;
+                status.textContent = 'Loading dataset...';
+                try {
+                    const res = await fetch(datasetURL);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const json = await res.json();
+
+                    // Detect an array inside the JSON. Accept either an array root, or common keys.
+                    let rows = null;
+                    if (Array.isArray(json)) rows = json;
+                    else if (json && typeof json === 'object') {
+                        // common array holders
+                        for (const key of ['data', 'rows', 'songs', 'items']) {
+                            if (Array.isArray(json[key])) { rows = json[key]; break; }
+                        }
+                        if (!rows) {
+                            // fallback: find first array value
+                            for (const k of Object.keys(json)) {
+                                if (Array.isArray(json[k])) { rows = json[k]; break; }
+                            }
+                        }
+                    }
+                    if (!rows) throw new Error('No array found in the JSON payload');
+                    if (rows.length === 0) {
+                        status.textContent = 'Dataset is empty.';
+                        return;
+                    }
+
+                    // Derive columns from keys of first row
+                    const first = rows[0];
+                    const cols = Object.keys(first);
+
+                    // Build Grid.js columns with basic formatting (truncate long text)
+                    const gridColumns = cols.map(col => {
+                        return {
+                            id: col,
+                            name: col,
+                            formatter: gridjs.html((cell) => {
+                                if (cell === null || cell === undefined) return '';
+                                let text = String(cell);
+                                if (text.length > 200) {
+                                    const short = text.slice(0, 200) + '…';
+                                    // escape
+                                    const escShort = short.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                                    const escFull = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                                    return `<span title="${escFull}">${escShort}</span>`;
+                                }
+                                return String(text)
+                                    .replaceAll('&', '&amp;')
+                                    .replaceAll('<', '&lt;')
+                                    .replaceAll('>', '&gt;');
+                            })
+                        };
+                    });
+
+                    // Prepare data rows as arrays (Grid.js expects arrays or objects matching columns)
+                    const gridData = rows.map(r => cols.map(c => (r[c] === undefined ? '' : r[c])));
+
+                    // Clear container and render
+                    container.innerHTML = '';
+                    // Create Grid
+                    new gridjs.Grid({
+                        columns: gridColumns,
+                        data: gridData,
+                        search: {
+                            selector: (cell, rowIndex, colIndex) => true
+                        },
+                        pagination: {
+                            enabled: true,
+                            limit: 25,
+                            summary: true
+                        },
+                        sort: true,
+                        style: {
+                            table: {
+                                'table-layout': 'auto'
+                            }
+                        }
+                    }).render(container);
+
+                    status.textContent = `Showing ${rows.length} rows. Use search, sort, and pagination.`;
+
+                } catch (err) {
+                    console.error(err);
+                    status.textContent = 'Error loading dataset: ' + err.message;
                 }
-            });
-            function updateInfoDiv() {
-                const selectedColumn = columnSelect.value;
-                const selectedCluster = parseInt(clusterSelect.value);
-                console.log('Selected column:', selectedColumn);
-                console.log('Selected cluster:', selectedCluster);
-                // filter dataset by selected cluster
-                let filtered = dataset.filter(aq.escape(d => d.hdb_label === selectedCluster));
-                console.log('Filtered dataset:', filtered);
-                // get values from selected column
-                let values = filtered.array(selectedColumn);
-                console.log('Values:', values);
-                // clear previous contents except the two dropdowns
-                while (infoDiv.childNodes.length > 4) {
-                    infoDiv.removeChild(infoDiv.lastChild);
-                }
-                // create a list of values
-                const ul = document.createElement('ul');
-                ul.className = 'list-group';
-                values.forEach(function (value) {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item';
-                    li.innerText = value;
-                    ul.appendChild(li);
-                });
-                infoDiv.appendChild(ul);
             }
 
+            // Run after DOM loaded
+            window.addEventListener('DOMContentLoaded', function () {
+                // If infoDiv is present, render table
+                const infoDiv = document.getElementById('infoDiv');
+                if (infoDiv) renderDatasetTable();
+            });
         </script>
 
         <script>
