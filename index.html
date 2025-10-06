@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.8</h6>
+                    <h6 class="badge bg-info">v0.9</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -60,9 +60,46 @@
                 </div>
                 <div id="infoDiv" class="col-12 border-1">
                     <h3>Cluster Contents</h3>
+                    <!-- Controls: select column to show and hdb_label filter -->
+                    <div class="d-flex gap-2 align-items-center my-2">
+                        <div>
+                            <label for="columnSelect" class="form-label small mb-0">Show column</label>
+                            <select id="columnSelect" class="form-select form-select-sm">
+                                <option value="__all__">All columns</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="hdbSelect" class="form-label small mb-0">Filter hdb_label</label>
+                            <select id="hdbSelect" class="form-select form-select-sm">
+                                <option value="__all__">All hdb_label</option>
+                            </select>
+                        </div>
+                        <div class="flex-grow-1"></div>
+                        <div id="tableStatus" class="text-muted small"></div>
+                    </div>
                     <!-- Interactive table will be inserted here -->
                     <div id="tableContainer" class="my-2"></div>
-                    <div id="tableStatus" class="text-muted small"></div>
+
+                    <!-- Details modal for row JSON -->
+                    <div class="modal fade" id="rowDetailModal" tabindex="-1" aria-labelledby="rowDetailModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="rowDetailModalLabel">Row details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre id="rowDetailPre" style="white-space:pre-wrap;word-break:break-word"></pre>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -70,52 +107,104 @@
 
 
         <script>
-            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/master/data/zh_songs.json'
+            // Use site-relative path so it works on GitHub Pages and local server
+            datasetURL = 'data/zh_songs.json'
 
+            // State kept so we can re-render with filters
+            let fullRows = null;
+            let fullCols = null;
 
+            // Utility: safely stringify for modal
+            function pretty(obj) {
+                try { return JSON.stringify(obj, null, 2); } catch (e) { return String(obj); }
+            }
 
-        </script>
+            // Open a song link if possible from a row; otherwise show modal with details
+            function openOrShowRow(rowObj) {
+                // candidate id and source field names
+                const idKeys = ['song_id', 'id', 'songId', 'songID', 'track_id'];
+                const sourceKeys = ['source', 'site', 'origin'];
+                let idVal = null, srcVal = null;
+                for (const k of idKeys) if (k in rowObj) { idVal = rowObj[k]; break; }
+                for (const k of sourceKeys) if (k in rowObj) { srcVal = rowObj[k]; break; }
+                if (idVal && srcVal) {
+                    // normalize source
+                    const s = String(srcVal).toLowerCase();
+                    let link = null;
+                    if (s.includes('suno')) link = `https://suno.com/song/${idVal}`;
+                    else if (s.includes('udio') || s.includes('udio')) link = `https://udio.com/songs/${idVal}`;
+                    else if (s.includes('youtube') || s.includes('yt')) link = String(idVal);
+                    if (link) { window.open(link, '_blank'); return; }
+                }
+                // fallback: show modal
+                document.getElementById('rowDetailPre').textContent = pretty(rowObj);
+                const modal = new bootstrap.Modal(document.getElementById('rowDetailModal'));
+                modal.show();
+            }
 
-        <script>
-            // Fetch the JSON dataset at datasetURL and render an interactive table inside #tableContainer
+            // Fetch, populate dropdowns, and render
             async function renderDatasetTable() {
                 const status = document.getElementById('tableStatus');
                 const container = document.getElementById('tableContainer');
+                const columnSelect = document.getElementById('columnSelect');
+                const hdbSelect = document.getElementById('hdbSelect');
                 if (!container) return;
                 status.textContent = 'Loading dataset...';
                 try {
                     const res = await fetch(datasetURL);
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     const json = await res.json();
+                    console.log('Dataset loaded', json);
 
-                    // Detect an array inside the JSON. Accept either an array root, or common keys.
+                    // Detect array
                     let rows = null;
                     if (Array.isArray(json)) rows = json;
                     else if (json && typeof json === 'object') {
-                        // common array holders
-                        for (const key of ['data', 'rows', 'songs', 'items']) {
-                            if (Array.isArray(json[key])) { rows = json[key]; break; }
-                        }
-                        if (!rows) {
-                            // fallback: find first array value
-                            for (const k of Object.keys(json)) {
-                                if (Array.isArray(json[k])) { rows = json[k]; break; }
-                            }
-                        }
+                        for (const key of ['data', 'rows', 'songs', 'items']) if (Array.isArray(json[key])) { rows = json[key]; break; }
+                        if (!rows) for (const k of Object.keys(json)) if (Array.isArray(json[k])) { rows = json[k]; break; }
                     }
                     if (!rows) throw new Error('No array found in the JSON payload');
-                    if (rows.length === 0) {
-                        status.textContent = 'Dataset is empty.';
-                        return;
-                    }
+                    fullRows = rows;
+                    if (rows.length === 0) { status.textContent = 'Dataset is empty.'; return; }
 
-                    // Derive columns from keys of first row
+                    // Columns
                     const first = rows[0];
                     const cols = Object.keys(first);
+                    fullCols = cols;
 
-                    // Build Grid.js columns with basic formatting (truncate long text)
-                    const gridColumns = cols.map(col => {
-                        return {
+                    // Populate columnSelect
+                    columnSelect.innerHTML = '<option value="__all__">All columns</option>' + cols.map(c => `<option value="${c}">${c}</option>`).join('');
+
+                    // Populate hdbSelect from distinct hdb_label values (if present)
+                    const hdbVals = new Set();
+                    for (const r of rows) {
+                        if ('hdb_label' in r && r.hdb_label !== null && r.hdb_label !== undefined) hdbVals.add(String(r.hdb_label));
+                    }
+                    const hdbOpts = ['<option value="__all__">All hdb_label</option>'];
+                    for (const v of Array.from(hdbVals).sort()) hdbOpts.push(`<option value="${v}">${v}</option>`);
+                    hdbSelect.innerHTML = hdbOpts.join('');
+
+                    // Attach change handlers
+                    columnSelect.onchange = () => drawGrid();
+                    hdbSelect.onchange = () => drawGrid();
+
+                    // Initial draw
+                    drawGrid();
+
+                    function drawGrid() {
+                        const colChoice = columnSelect.value;
+                        const hdbChoice = hdbSelect.value;
+                        // Apply filter
+                        let filtered = fullRows;
+                        if (hdbChoice && hdbChoice !== '__all__') {
+                            filtered = filtered.filter(r => String(r.hdb_label) === hdbChoice);
+                        }
+
+                        // Build columns for Grid.js
+                        let useCols = fullCols;
+                        if (colChoice && colChoice !== '__all__') useCols = [colChoice];
+
+                        const gridColumns = useCols.map(col => ({
                             id: col,
                             name: col,
                             formatter: gridjs.html((cell) => {
@@ -123,45 +212,57 @@
                                 let text = String(cell);
                                 if (text.length > 200) {
                                     const short = text.slice(0, 200) + '…';
-                                    // escape
-                                    const escShort = short.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                                     const escFull = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-                                    return `<span title="${escFull}">${escShort}</span>`;
+                                    return `<span title="${escFull}">${short.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</span>`;
                                 }
-                                return String(text)
-                                    .replaceAll('&', '&amp;')
-                                    .replaceAll('<', '&lt;')
-                                    .replaceAll('>', '&gt;');
+                                return String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                             })
-                        };
-                    });
+                        }));
 
-                    // Prepare data rows as arrays (Grid.js expects arrays or objects matching columns)
-                    const gridData = rows.map(r => cols.map(c => (r[c] === undefined ? '' : r[c])));
+                        // Add an action column with Open / Details
+                        gridColumns.push({
+                            id: '__actions__', name: 'Actions', formatter: gridjs.html((_, row) => {
+                                // row.cells -> array of cell values matching useCols
+                                // We'll put data-rowindex to map back to original filtered index
+                                const idx = row.cellsIndex;
+                                return `<div class="btn-group" role="group"><button class="btn btn-sm btn-outline-primary open-btn" data-idx="${idx}">Open</button><button class="btn btn-sm btn-outline-secondary detail-btn" data-idx="${idx}">Details</button></div>`;
+                            })
+                        });
 
-                    // Clear container and render
-                    container.innerHTML = '';
-                    // Create Grid
-                    new gridjs.Grid({
-                        columns: gridColumns,
-                        data: gridData,
-                        search: {
-                            selector: (cell, rowIndex, colIndex) => true
-                        },
-                        pagination: {
-                            enabled: true,
-                            limit: 25,
-                            summary: true
-                        },
-                        sort: true,
-                        style: {
-                            table: {
-                                'table-layout': 'auto'
-                            }
-                        }
-                    }).render(container);
+                        // Prepare data rows as arrays
+                        const gridData = filtered.map(r => useCols.map(c => (r[c] === undefined ? '' : r[c])));
 
-                    status.textContent = `Showing ${rows.length} rows. Use search, sort, and pagination.`;
+                        container.innerHTML = '';
+                        const grid = new gridjs.Grid({
+                            columns: gridColumns,
+                            data: gridData,
+                            search: true,
+                            pagination: { enabled: true, limit: 25, summary: true },
+                            sort: true,
+                            style: { table: { 'table-layout': 'auto' } }
+                        }).render(container);
+
+                        // After render attach event handlers for action buttons
+                        // Buttons are inside the container; find them by class
+                        setTimeout(() => {
+                            const openBtns = container.querySelectorAll('.open-btn');
+                            const detailBtns = container.querySelectorAll('.detail-btn');
+                            openBtns.forEach(b => b.onclick = (e) => {
+                                const idx = Number(e.currentTarget.getAttribute('data-idx'));
+                                const rowObj = filtered[idx];
+                                openOrShowRow(rowObj);
+                            });
+                            detailBtns.forEach(b => b.onclick = (e) => {
+                                const idx = Number(e.currentTarget.getAttribute('data-idx'));
+                                const rowObj = filtered[idx];
+                                document.getElementById('rowDetailPre').textContent = pretty(rowObj);
+                                const modal = new bootstrap.Modal(document.getElementById('rowDetailModal'));
+                                modal.show();
+                            });
+                        }, 50);
+
+                        status.textContent = `Showing ${filtered.length} rows (${fullRows.length} total).`;
+                    }
 
                 } catch (err) {
                     console.error(err);
@@ -171,7 +272,6 @@
 
             // Run after DOM loaded
             window.addEventListener('DOMContentLoaded', function () {
-                // If infoDiv is present, render table
                 const infoDiv = document.getElementById('infoDiv');
                 if (infoDiv) renderDatasetTable();
             });
