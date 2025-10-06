@@ -111,7 +111,7 @@
             datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.csv';
             datasetPath = 'data/zh_songs.csv';
 
-            aq.loadJSON(datasetURL).then(function (df) {
+            aq.loadJSON(datasetURL, delimiter = '\t').then(function (df) {
                 console.log('DataFrame loaded:', df);
                 df_columns = df.columnNames();
                 console.log('DataFrame columns:', df_columns);
