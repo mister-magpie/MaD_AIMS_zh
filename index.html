@@ -110,7 +110,7 @@
             datasetURL = 'data/zh_songs.json'
             aq.loadJSON(datasetURL).then(function (df) {
                 console.log('DataFrame loaded:', df);
-                df_columns = df.listColumns();
+                df_columns = df.columnNames();
                 console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
                 df.df_columns.forEach(col => {
