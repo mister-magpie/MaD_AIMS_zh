@@ -30,7 +30,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.13</h6>
+                    <!-- <h6 class="badge bg-info">v0.13</h6> -->
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -119,8 +119,6 @@
                     option.textContent = col;
                     document.getElementById('columnSelect').appendChild(option);
                 });
-                // set 'lyrics' as default selected column
-                document.getElementById('columnSelect').value = 'lyrics';
 
                 // select unique hdb_labels and sort them
                 hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderby("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
@@ -141,7 +139,12 @@
                     option.textContent = label;
                     document.getElementById('hdbSelect').appendChild(option);
                 });
+
                 // updatetable
+                // set 'lyrics' as default selected column
+                document.getElementById('columnSelect').value = 'lyrics';
+                // set '0' as default selected hdb_label
+                document.getElementById('hdbSelect').value = '0';
                 updateTable();
             });
             // when the dropdown change, select the correct rows from the DATA dataframe
@@ -254,8 +257,8 @@
                 var graphLayout = plotJson.layout;
                 graphLayout['autosize'] = true;
                 graphLayout['responsive'] = true;
-                // graphLayout['height'] = 900;
-                // graphLayout['width'] = 1600;
+                graphLayout['height'] = 900;
+                graphLayout['width'] = 900;
                 graphLayout['showlegend'] = true;
                 graphLayout['legend'] = { 'orientation': 'v' };
                 // if (plotType == "lyrics") {
