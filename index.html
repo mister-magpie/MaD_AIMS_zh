@@ -124,7 +124,7 @@
                 )
                 console.log('qwen_labels:', qwen_labels);
                 // Populate hdbSelect dropdown
-                qwen_labels.forEach(label => {
+                qwen_labels.sort().forEach(label => {
                     console.log("polulating hdbSelect with label:", label);
                     const option = document.createElement('option');
                     option.value = label.split(')')[0]; // use only the number as value
@@ -152,7 +152,7 @@
                 }
                 let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", selectedColumn]).objects()
                 console.log('Filtered data:', filteredData);
-                $('#exampleTable').DataTable({
+                new DataTable('#exampleTable', {
                     data: filteredData,
                     columns: [
                         { data: 'url' },
