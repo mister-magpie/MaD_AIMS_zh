@@ -146,8 +146,12 @@
                 const selectedHdb = document.getElementById('hdbSelect').value;
                 console.log('Selected column:', selectedColumn);
                 console.log('Selected hdb:', selectedHdb);
-
-                let filteredData = DATA.filter(d => d.hdb_label == selectedHdb).orderby("dist2centroid").select(["url", selectedColumn]).objects()
+                if (!selectedColumn || !selectedHdb) {
+                    console.error('Please select both column and hdb_label');
+                    return;
+                }
+                let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", selectedColumn]).objects()
+                console.log('Filtered data:', filteredData);
                 $('#exampleTable').DataTable({
                     data: filteredData,
                     columns: [
