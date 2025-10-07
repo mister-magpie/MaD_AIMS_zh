@@ -19,6 +19,7 @@
 
 
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.css" />
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
 
     <style></style>
@@ -164,7 +165,12 @@
                 new DataTable('#exampleTable', {
                     data: filteredData,
                     columns: [
-                        { data: 'url' },
+                        {
+                            data: 'url',
+                            render: function (data, type, row, meta) {
+                                return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Download</a>`;
+                            }
+                        },
                         { data: selectedColumn }
                     ]
                 });
