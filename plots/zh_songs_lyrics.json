@@ -19835,8 +19835,6 @@
                 }
             }
         },
-        "width": 1920,
-        "height": 1080,
         "responsive": true,
         "title": {
             "text": "Clusters of lyrics embeddings (HDBSCAN + UMAP)"
