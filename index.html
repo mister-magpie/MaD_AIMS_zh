@@ -34,21 +34,20 @@
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
-                    <p class="fw-light fs-4">by XXX and YYY.</p>
-                    <p class="fw-light fst-italic">Currently under revision for the Music+Data Journal</p>
-                    <br>
+                    <p class="fw-light fs-6">by XXX and YYY.
+                        <span class="fw-light fst-italic">Currently under revision for the Music+Data Journal</span>
+                    </p>
                     <p>
                         This page contains interactive versions of the visualizations featured in the paper.<br>
                         Press the buttons to switch between different plots. <br>
                         Clicking on the points in the scatterplot will open the corresponding song in a new tab.
                     </p>
                     <p>
-                        Under the plots an interactive tables allow the explore the different columns in the dataset,
-                        filtering by cluster. <br>
-                        The google translate browser extension can be used to translate the Chinese text directly in the
-                        page.
+                        The interactive table allows the explore the different columns in the dataset, filtering by
+                        cluster. <br>
+                        The google translate browser extension can be used to translate the Chinese text directly in
+                        the page.
                     </p>
-                    <hr>
                     <!-- button for selecting which plot to visualize among: lyrics, tags categories and top 100 tags-->
                     <div class="btn-group" role="group" aria-label="Plot Type">
                         <input type="radio" class="btn-check" name="plotType" id="plotType_lyrics" autocomplete="off"
@@ -75,7 +74,7 @@
                 <div id="plotDiv" class=""></div>
             </div>
             <div id="infoDiv" class="col-6 p-3">
-                <h3>Cluster Contents</h3>
+                <h6>Cluster Contents</h6>
                 <!-- Controls: select column to show and hdb_label filter -->
                 <div class="d-flex gap-2 align-items-center my-2">
                     <div>
@@ -186,7 +185,7 @@
                             return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Listen<i class="fas fa-external-link-alt"></i></a>`;
                         }
                     },
-                    { data: 'idx', title: 'ID' },
+                    { data: 'idx', title: 'idx' },
                     { data: selectedColumn, title: selectedColumn }
                 ]
             });
@@ -264,9 +263,11 @@
             graphLayout['height'] = 900;
             graphLayout['showlegend'] = true;
             graphLayout['legend'] = { 'orientation': 'v' };
-            // if (plotType == "lyrics") {
-            //     graphLayout['legend'] = false;
-            // }
+            // if plottype is tags100 the plot should vertically oriented
+            if (plotType == 'tags100') {
+                graphLayout['orientation'] = 'v';
+            }
+
             Plotly.newPlot('plotDiv', graphData, graphLayout);
 
             document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
