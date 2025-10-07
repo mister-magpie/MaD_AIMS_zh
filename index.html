@@ -155,7 +155,7 @@
                 }
                 let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", selectedColumn]).objects()
                 console.log('Filtered data:', filteredData);
-                new DataTable('#exampleTable', {
+                $("#exampleTable").DataTable({
                     data: filteredData,
                     columns: [
                         { data: 'url' },
