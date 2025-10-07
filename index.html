@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-12 m-2 p-2">
                 <div>
-                    <h6 class="badge bg-info">v0.12</h6>
+                    <h6 class="badge bg-info">v0.13</h6>
                     <p class="display-6">
                         Exploring “Chineseness” in AI-generated Music: A Quantitative-Qualitative Study
                     </p>
@@ -125,18 +125,15 @@
                 });
 
                 // select unique hdb_labels and sort them
-                let hdb_labels = df.groupby('hdb_label').count().column('hdb_label');
-                console.log('Distinct hdb_labels:', hdb_labels);
-
+                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().select(['hdb_label', 'qwen_hdb_name']);
                 let qwen_labels = []
-                for (const label of hdb_labels.values('hdb_labels')) {
-                    console.log('Processing label:', label);
-                    // select qwen_hdb_name from df where hdb_label == label
-                    let labelName = df.filter(d => d.hdb_label === label).select('qwen_hdb_name').array('qwen_hdb_name')[0];
-                    console.log(labelName)
-                    // build labels with the following format `${label}) ${labelName}`
-                    qwen_labels.push(`${label}) ${labelName}`);
-                }
+                // console.log('Distinct hdb_labels:', hdb_labels.print());
+                hdb_labels.scan(
+                    (row, data, stop) => {
+                        console.log(data.hdb_label[row], data.qwen_hdb_name[row]);
+                        qwen_labels.push(data.hdb_label[row] + ') ' + data.qwen_hdb_name[row]);
+                    },
+                )
                 console.log('qwen_labels:', qwen_labels);
                 // Populate hdbSelect dropdown
                 qwen_labels.forEach(label => {
