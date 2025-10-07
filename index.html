@@ -15,6 +15,12 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <!-- <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/danfojs@1.2.0/lib/bundle.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
     <style>
     </style>
 </head>
@@ -62,44 +68,24 @@
                     <!-- Controls: select column to show and hdb_label filter -->
                     <div class="d-flex gap-2 align-items-center my-2">
                         <div>
-                            <label for="columnSelect" class="form-label small mb-0">Show column</label>
+                            <label for="columnSelect" class="form-label small mb-0">Select Column</label>
                             <select id="columnSelect" class="form-select form-select-sm">
-                                <option value="__all__">All columns</option>
+                                <!-- <option value="__all__">All columns</option> -->
                             </select>
                         </div>
                         <div>
-                            <label for="hdbSelect" class="form-label small mb-0">Filter hdb_label</label>
+                            <label for="hdbSelect" class="form-label small mb-0">Select Cluster</label>
                             <select id="hdbSelect" class="form-select form-select-sm">
-                                <option value="__all__">All hdb_label</option>
+                                <!-- <option value="__all__">All hdb_label</option> -->
                             </select>
                         </div>
                         <div class="flex-grow-1"></div>
                         <div id="tableStatus" class="text-muted small"></div>
                     </div>
-                    <!-- Interactive table will be inserted here -->
-                    <div id="tableContainer" class="my-2"></div>
-
-                    <!-- Details modal for row JSON -->
-                    <div class="modal fade" id="rowDetailModal" tabindex="-1" aria-labelledby="rowDetailModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="rowDetailModalLabel">Row details</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <pre id="rowDetailPre" style="white-space:pre-wrap;word-break:break-word"></pre>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
+                    <!--  -->
+                    <div id="tableContainer" class="my-2">
+                        <table id="exampleTable" class="display" width="100%"></table>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -110,9 +96,11 @@
             // Use site-relative path so it works on GitHub Pages and local server
             datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.csv';
             datasetPath = 'data/zh_songs.csv';
+            let DATA;
 
             aq.loadCSV(datasetURL, { delimiter: ';' }).then(function (df) {
                 console.log('DataFrame loaded:', df);
+                DATA = df; // store the loaded DataFrame in a global variable
                 df_columns = df.columnNames();
                 console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
@@ -125,7 +113,7 @@
                 });
 
                 // select unique hdb_labels and sort them
-                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().select(['hdb_label', 'qwen_hdb_name']);
+                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderBy("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
                 let qwen_labels = []
                 // console.log('Distinct hdb_labels:', hdb_labels.print());
                 hdb_labels.scan(
@@ -144,6 +132,32 @@
                     document.getElementById('hdbSelect').appendChild(option);
                 });
             });
+            // when the dropdown change, select the correct rows from the DATA dataframe
+            document.getElementById('columnSelect').addEventListener('change', updateTable);
+            document.getElementById('hdbSelect').addEventListener('change', updateTable);
+
+            function updateTable() {
+                // get data from DATA
+                if (!DATA) {
+                    console.error('Data not loaded yet');
+                    return;
+                }
+                const selectedColumn = document.getElementById('columnSelect').value;
+                const selectedHdb = document.getElementById('hdbSelect').value;
+                console.log('Selected column:', selectedColumn);
+                console.log('Selected hdb:', selectedHdb);
+
+                let filteredData = DATA.filter(d => d.hdb_label == selectedHdb).orderBy("dist2centroid").select(["url", selectedColumn]).objects()
+                $('#exampleTable').DataTable({
+                    data: filteredData,
+                    columns: [
+                        { data: 'url' },
+                        { data: selectedColumn }
+                    ]
+                });
+            }
+
+
 
 
 
