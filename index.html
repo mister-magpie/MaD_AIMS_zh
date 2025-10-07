@@ -113,7 +113,7 @@
                 });
 
                 // select unique hdb_labels and sort them
-                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderBy("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
+                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderby("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
                 let qwen_labels = []
                 // console.log('Distinct hdb_labels:', hdb_labels.print());
                 hdb_labels.scan(
@@ -147,7 +147,7 @@
                 console.log('Selected column:', selectedColumn);
                 console.log('Selected hdb:', selectedHdb);
 
-                let filteredData = DATA.filter(d => d.hdb_label == selectedHdb).orderBy("dist2centroid").select(["url", selectedColumn]).objects()
+                let filteredData = DATA.filter(d => d.hdb_label == selectedHdb).orderby("dist2centroid").select(["url", selectedColumn]).objects()
                 $('#exampleTable').DataTable({
                     data: filteredData,
                     columns: [
