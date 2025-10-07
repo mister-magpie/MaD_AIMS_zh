@@ -155,7 +155,13 @@
                 }
                 let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", selectedColumn]).objects()
                 console.log('Filtered data:', filteredData);
-                $("#exampleTable").DataTable({
+                // destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#exampleTable')) {
+                    $('#exampleTable').DataTable().clear().destroy();
+                    $('#exampleTable').empty(); // clear existing table data
+                }
+                // update table status
+                new DataTable('#exampleTable', {
                     data: filteredData,
                     columns: [
                         { data: 'url' },
