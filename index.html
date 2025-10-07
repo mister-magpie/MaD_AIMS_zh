@@ -43,8 +43,10 @@
                         Clicking on the points in the scatterplot will open the corresponding song in a new tab.
                     </p>
                     <p>
-                        Under the plots an interactive tables allow the explore the different columns in the dataset, filtering by cluster. <br>
-                        The google translate browser extension can be used to translate the Chinese text directly in the page.
+                        Under the plots an interactive tables allow the explore the different columns in the dataset,
+                        filtering by cluster. <br>
+                        The google translate browser extension can be used to translate the Chinese text directly in the
+                        page.
                     </p>
                     <hr>
                     <!-- button for selecting which plot to visualize among: lyrics, tags categories and top 100 tags-->
@@ -174,7 +176,7 @@
                         {
                             data: 'url',
                             render: function (data, type, row, meta) {
-                                return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Download</a>`;
+                                return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Listen<i class="fas fa-external-link-alt"></i></a>`;
                             }
                         },
                         { data: selectedColumn }
