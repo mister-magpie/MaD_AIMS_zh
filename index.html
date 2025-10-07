@@ -110,7 +110,7 @@
                 console.log('DataFrame loaded:', df);
                 DATA = df; // store the loaded DataFrame in a global variable
                 df_columns = df.columnNames();
-                console.log('DataFrame columns:', df_columns);
+                // console.log('DataFrame columns:', df_columns);
                 // Populate columnSelect dropdown
                 df_columns.forEach(col => {
                     console.log(col)
@@ -128,14 +128,14 @@
                 // console.log('Distinct hdb_labels:', hdb_labels.print());
                 hdb_labels.scan(
                     (row, data, stop) => {
-                        console.log(data.hdb_label[row], data.qwen_hdb_name[row]);
+                        // console.log(data.hdb_label[row], data.qwen_hdb_name[row]);
                         qwen_labels.push(data.hdb_label[row] + ') ' + data.qwen_hdb_name[row]);
                     },
                 )
-                console.log('qwen_labels:', qwen_labels);
+                // console.log('qwen_labels:', qwen_labels);
                 // Populate hdbSelect dropdown
                 qwen_labels.sort().forEach(label => {
-                    console.log("polulating hdbSelect with label:", label);
+                    //console.log("polulating hdbSelect with label:", label);
                     const option = document.createElement('option');
                     option.value = label.split(')')[0]; // use only the number as value
                     option.textContent = label;
@@ -156,14 +156,14 @@
                 }
                 const selectedColumn = document.getElementById('columnSelect').value;
                 const selectedHdb = document.getElementById('hdbSelect').value;
-                console.log('Selected column:', selectedColumn);
-                console.log('Selected hdb:', selectedHdb);
+                //console.log('Selected column:', selectedColumn);
+                // console.log('Selected hdb:', selectedHdb);
                 if (!selectedColumn || !selectedHdb) {
                     console.error('Please select both column and hdb_label');
                     return;
                 }
-                let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", selectedColumn]).objects()
-                console.log('Filtered data:', filteredData);
+                let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", "idx", selectedColumn]).objects()
+                //console.log('Filtered data:', filteredData);
                 // destroy existing DataTable if it exists
                 if ($.fn.DataTable.isDataTable('#exampleTable')) {
                     $('#exampleTable').DataTable().clear().destroy();
@@ -175,11 +175,13 @@
                     columns: [
                         {
                             data: 'url',
+                            title: 'URL',
                             render: function (data, type, row, meta) {
                                 return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Listen<i class="fas fa-external-link-alt"></i></a>`;
                             }
                         },
-                        { data: selectedColumn }
+                        { data: 'idx', title: 'ID' },
+                        { data: selectedColumn, title: selectedColumn }
                     ]
                 });
             }
