@@ -68,177 +68,180 @@
                     </div>
                     <hr>
                 </div>
-                <div class="col-6">
-                    <div id="plotDiv" class=""></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div id="plotDiv" class=""></div>
+            </div>
+            <div id="infoDiv" class="col-6 p-3">
+                <h3>Cluster Contents</h3>
+                <!-- Controls: select column to show and hdb_label filter -->
+                <div class="d-flex gap-2 align-items-center my-2">
+                    <div>
+                        <label for="columnSelect" class="form-label small mb-0">Select Column</label>
+                        <select id="columnSelect" class="form-select form-select-sm">
+                            <!-- <option value="__all__">All columns</option> -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="hdbSelect" class="form-label small mb-0">Select Cluster</label>
+                        <select id="hdbSelect" class="form-select form-select-sm">
+                            <!-- <option value="__all__">All hdb_label</option> -->
+                        </select>
+                    </div>
+                    <div class="flex-grow-1"></div>
+                    <div id="tableStatus" class="text-muted small"></div>
                 </div>
-                <div id="infoDiv" class="col-6 p-3">
-                    <h3>Cluster Contents</h3>
-                    <!-- Controls: select column to show and hdb_label filter -->
-                    <div class="d-flex gap-2 align-items-center my-2">
-                        <div>
-                            <label for="columnSelect" class="form-label small mb-0">Select Column</label>
-                            <select id="columnSelect" class="form-select form-select-sm">
-                                <!-- <option value="__all__">All columns</option> -->
-                            </select>
-                        </div>
-                        <div>
-                            <label for="hdbSelect" class="form-label small mb-0">Select Cluster</label>
-                            <select id="hdbSelect" class="form-select form-select-sm">
-                                <!-- <option value="__all__">All hdb_label</option> -->
-                            </select>
-                        </div>
-                        <div class="flex-grow-1"></div>
-                        <div id="tableStatus" class="text-muted small"></div>
-                    </div>
-                    <!--  -->
-                    <div id="tableContainer" class="my-2">
-                        <table id="exampleTable" class="display fs-6" width="100%"></table>
-                    </div>
+                <!--  -->
+                <div id="tableContainer" class="my-2">
+                    <table id="exampleTable" class="display fs-6" width="100%"></table>
                 </div>
             </div>
         </div>
+    </div>
 
 
-        <script>
-            // var DataFrame = dfjs.DataFrame;
-            // Use site-relative path so it works on GitHub Pages and local server
-            datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.csv';
-            datasetPath = 'data/zh_songs.csv';
-            let DATA;
+    <script>
+        // var DataFrame = dfjs.DataFrame;
+        // Use site-relative path so it works on GitHub Pages and local server
+        datasetURL = 'https://raw.githubusercontent.com/mister-magpie/MaD_AIMS_zh/refs/heads/master/data/zh_songs.csv';
+        datasetPath = 'data/zh_songs.csv';
+        let DATA;
 
-            aq.loadCSV(datasetURL, { delimiter: ';' }).then(function (df) {
-                console.log('DataFrame loaded:', df);
-                DATA = df; // store the loaded DataFrame in a global variable
-                df_columns = df.columnNames();
-                // console.log('DataFrame columns:', df_columns);
-                // Populate columnSelect dropdown
-                df_columns.forEach(col => {
-                    console.log(col)
-                    const option = document.createElement('option');
-                    option.value = col;
-                    option.textContent = col;
-                    document.getElementById('columnSelect').appendChild(option);
-                });
-
-                // select unique hdb_labels and sort them
-                hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderby("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
-                let qwen_labels = []
-                // console.log('Distinct hdb_labels:', hdb_labels.print());
-                hdb_labels.scan(
-                    (row, data, stop) => {
-                        // console.log(data.hdb_label[row], data.qwen_hdb_name[row]);
-                        qwen_labels.push(data.hdb_label[row] + ') ' + data.qwen_hdb_name[row]);
-                    },
-                )
-                // console.log('qwen_labels:', qwen_labels);
-                // Populate hdbSelect dropdown
-                qwen_labels.sort().forEach(label => {
-                    //console.log("polulating hdbSelect with label:", label);
-                    const option = document.createElement('option');
-                    option.value = label.split(')')[0]; // use only the number as value
-                    option.textContent = label;
-                    document.getElementById('hdbSelect').appendChild(option);
-                });
-
-                // updatetable
-                // set 'lyrics' as default selected column
-                document.getElementById('columnSelect').value = 'lyrics';
-                // set '0' as default selected hdb_label
-                document.getElementById('hdbSelect').value = '0';
-                updateTable();
+        aq.loadCSV(datasetURL, { delimiter: ';' }).then(function (df) {
+            console.log('DataFrame loaded:', df);
+            DATA = df; // store the loaded DataFrame in a global variable
+            df_columns = df.columnNames();
+            // console.log('DataFrame columns:', df_columns);
+            // Populate columnSelect dropdown
+            df_columns.forEach(col => {
+                console.log(col)
+                const option = document.createElement('option');
+                option.value = col;
+                option.textContent = col;
+                document.getElementById('columnSelect').appendChild(option);
             });
-            // when the dropdown change, select the correct rows from the DATA dataframe
-            document.getElementById('columnSelect').addEventListener('change', updateTable);
-            document.getElementById('hdbSelect').addEventListener('change', updateTable);
 
-            function updateTable() {
-                // get data from DATA
-                if (!DATA) {
-                    console.error('Data not loaded yet');
-                    return;
-                }
-                const selectedColumn = document.getElementById('columnSelect').value;
-                const selectedHdb = document.getElementById('hdbSelect').value;
-                //console.log('Selected column:', selectedColumn);
-                // console.log('Selected hdb:', selectedHdb);
-                if (!selectedColumn || !selectedHdb) {
-                    console.error('Please select both column and hdb_label');
-                    return;
-                }
-                let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", "idx", selectedColumn]).objects()
-                //console.log('Filtered data:', filteredData);
-                // destroy existing DataTable if it exists
-                if ($.fn.DataTable.isDataTable('#exampleTable')) {
-                    $('#exampleTable').DataTable().clear().destroy();
-                    $('#exampleTable').empty(); // clear existing table data
-                }
-                // update table status
-                new DataTable('#exampleTable', {
-                    data: filteredData,
-                    columns: [
-                        {
-                            data: 'url',
-                            title: 'URL',
-                            render: function (data, type, row, meta) {
-                                return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Listen<i class="fas fa-external-link-alt"></i></a>`;
-                            }
-                        },
-                        { data: 'idx', title: 'ID' },
-                        { data: selectedColumn, title: selectedColumn }
-                    ]
-                });
+            // select unique hdb_labels and sort them
+            hdb_labels = df.groupby(['hdb_label', 'qwen_hdb_name']).count().orderby("hdb_label").select(['hdb_label', 'qwen_hdb_name']);
+            let qwen_labels = []
+            // console.log('Distinct hdb_labels:', hdb_labels.print());
+            hdb_labels.scan(
+                (row, data, stop) => {
+                    // console.log(data.hdb_label[row], data.qwen_hdb_name[row]);
+                    qwen_labels.push(data.hdb_label[row] + ') ' + data.qwen_hdb_name[row]);
+                },
+            )
+            // console.log('qwen_labels:', qwen_labels);
+            // Populate hdbSelect dropdown
+            qwen_labels.sort().forEach(label => {
+                //console.log("polulating hdbSelect with label:", label);
+                const option = document.createElement('option');
+                option.value = label.split(')')[0]; // use only the number as value
+                option.textContent = label;
+                document.getElementById('hdbSelect').appendChild(option);
+            });
+
+            // updatetable
+            // set 'lyrics' as default selected column
+            document.getElementById('columnSelect').value = 'lyrics';
+            // set '0' as default selected hdb_label
+            document.getElementById('hdbSelect').value = '0';
+            updateTable();
+        });
+        // when the dropdown change, select the correct rows from the DATA dataframe
+        document.getElementById('columnSelect').addEventListener('change', updateTable);
+        document.getElementById('hdbSelect').addEventListener('change', updateTable);
+
+        function updateTable() {
+            // get data from DATA
+            if (!DATA) {
+                console.error('Data not loaded yet');
+                return;
             }
-
-        </script>
-
-        <script>
-            // Only consider plot type, not labels
-            let currentPlot = '';
-
-            // Listen for plot type radio button changes
-            document.getElementsByName('plotType').forEach(function (plotType) {
-                plotType.addEventListener('change', function () {
-                    let plotTypeValue = plotType.value;
-                    currentPlot = plotTypeValue;
-                    createPlot(plotTypeValue);
-                });
+            const selectedColumn = document.getElementById('columnSelect').value;
+            const selectedHdb = document.getElementById('hdbSelect').value;
+            //console.log('Selected column:', selectedColumn);
+            // console.log('Selected hdb:', selectedHdb);
+            if (!selectedColumn || !selectedHdb) {
+                console.error('Please select both column and hdb_label');
+                return;
+            }
+            let filteredData = DATA.filter(aq.escape(d => d.hdb_label == selectedHdb)).orderby("dist2centroid").select(["url", "idx", selectedColumn]).objects()
+            //console.log('Filtered data:', filteredData);
+            // destroy existing DataTable if it exists
+            if ($.fn.DataTable.isDataTable('#exampleTable')) {
+                $('#exampleTable').DataTable().clear().destroy();
+                $('#exampleTable').empty(); // clear existing table data
+            }
+            // update table status
+            new DataTable('#exampleTable', {
+                data: filteredData,
+                columns: [
+                    {
+                        data: 'url',
+                        title: 'URL',
+                        render: function (data, type, row, meta) {
+                            return `<a href="${data}" target="_blank" title="Open song" style="display:inline-block;padding:1px 8px;font-size:0.85em;background:#0074D9;color:white;border-radius:4px;text-decoration:none;margin-right:8px;">Listen<i class="fas fa-external-link-alt"></i></a>`;
+                        }
+                    },
+                    { data: 'idx', title: 'ID' },
+                    { data: selectedColumn, title: selectedColumn }
+                ]
             });
+        }
 
-            // Initial plot on page load
-            window.addEventListener('DOMContentLoaded', function () {
-                let checked = document.querySelector('input[name="plotType"]:checked').value;
-                console.log('Initial plot', checked);
-                createPlot(checked);
+    </script>
+
+    <script>
+        // Only consider plot type, not labels
+        let currentPlot = '';
+
+        // Listen for plot type radio button changes
+        document.getElementsByName('plotType').forEach(function (plotType) {
+            plotType.addEventListener('change', function () {
+                let plotTypeValue = plotType.value;
+                currentPlot = plotTypeValue;
+                createPlot(plotTypeValue);
             });
+        });
 
-            async function createPlot(plotType) {
-                console.log('CreatePlot -> plotType =', plotType);
-                let plotFile;
-                if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
-                else if (plotType == 'tagscat') plotFile = 'zh_songs_tags_cat';
-                else if (plotType == 'tags100') plotFile = 'zh_songs_tags_top100';
-                else plotFile = null;
-                console.log('plotFile:', plotFile);
-                // The filename is just the plotType
-                let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
-                    .then(response => response.json())
-                    .catch(error => { console.error(error); return null; });
-                if (!plotJson) {
-                    // Create toast container if it doesn't exist
-                    if (!document.getElementById('toastContainer')) {
-                        const toastContainer = document.createElement('div');
-                        toastContainer.id = 'toastContainer';
-                        toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
-                        toastContainer.style.zIndex = 1080;
-                        document.body.appendChild(toastContainer);
-                    }
-                    // Create toast element
-                    const toast = document.createElement('div');
-                    toast.className = 'toast align-items-center text-bg-danger border-0 show';
-                    toast.setAttribute('role', 'alert');
-                    toast.setAttribute('aria-live', 'assertive');
-                    toast.setAttribute('aria-atomic', 'true');
-                    toast.innerHTML = `
+        // Initial plot on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            let checked = document.querySelector('input[name="plotType"]:checked').value;
+            console.log('Initial plot', checked);
+            createPlot(checked);
+        });
+
+        async function createPlot(plotType) {
+            console.log('CreatePlot -> plotType =', plotType);
+            let plotFile;
+            if (plotType == 'lyrics') plotFile = 'zh_songs_lyrics';
+            else if (plotType == 'tagscat') plotFile = 'zh_songs_tags_cat';
+            else if (plotType == 'tags100') plotFile = 'zh_songs_tags_top100';
+            else plotFile = null;
+            console.log('plotFile:', plotFile);
+            // The filename is just the plotType
+            let plotJson = await fetch(`https://mister-magpie.github.io/MaD_AIMS_zh/plots/${plotFile}.json`)
+                .then(response => response.json())
+                .catch(error => { console.error(error); return null; });
+            if (!plotJson) {
+                // Create toast container if it doesn't exist
+                if (!document.getElementById('toastContainer')) {
+                    const toastContainer = document.createElement('div');
+                    toastContainer.id = 'toastContainer';
+                    toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                    toastContainer.style.zIndex = 1080;
+                    document.body.appendChild(toastContainer);
+                }
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = 'toast align-items-center text-bg-danger border-0 show';
+                toast.setAttribute('role', 'alert');
+                toast.setAttribute('aria-live', 'assertive');
+                toast.setAttribute('aria-atomic', 'true');
+                toast.innerHTML = `
                         <div class="d-flex">
                             <div class="toast-body">
                                 Plot data not found.
@@ -246,56 +249,56 @@
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     `;
-                    document.getElementById('toastContainer').appendChild(toast);
-                    // Initialize and show the toast using Bootstrap's JS
-                    if (window.bootstrap && bootstrap.Toast) {
-                        new bootstrap.Toast(toast, { delay: 4000 }).show();
-                    }
-                    return;
+                document.getElementById('toastContainer').appendChild(toast);
+                // Initialize and show the toast using Bootstrap's JS
+                if (window.bootstrap && bootstrap.Toast) {
+                    new bootstrap.Toast(toast, { delay: 4000 }).show();
                 }
-                var graphData = plotJson.data;
-                var graphLayout = plotJson.layout;
-                graphLayout['autosize'] = true;
-                graphLayout['responsive'] = true;
-                // graphLayout['width'] = 1200;
-                // graphLayout['height'] = 900;
-                graphLayout['showlegend'] = true;
-                graphLayout['legend'] = { 'orientation': 'v' };
-                // if (plotType == "lyrics") {
-                //     graphLayout['legend'] = false;
-                // }
-                Plotly.newPlot('plotDiv', graphData, graphLayout);
-
-                document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
-                    if (currentPlot == 'tags') return;
-                    let songID = clickData.points[0].customdata[0];
-                    let source = clickData.points[0].customdata[1];
-                    if (source == 'suno') {
-                        let link = `https://${source}.com/song/${songID}`;
-                        window.open(link, '_blank');
-                    } else if (source == 'udio') {
-                        let link = `https://${source}.com/songs/${songID}`;
-                        window.open(link, '_blank');
-                    } else {
-                        alert("error with link", clickData);
-                    }
-                    // Show infoDiv when a point is clicked
-                    const infoDiv = document.getElementById('infoDiv');
-                    infoDiv.style.display = 'block';
-                    // populate infoDiv if cluster selection dropdown exists
-                    const clusterSelect = document.getElementById('clusterSelect');
-                    if (clusterSelect) {
-                        clusterSelect.value = clickData.points[0].customdata[2] || clusterSelect.value;
-                    }
-                });
+                return;
             }
+            var graphData = plotJson.data;
+            var graphLayout = plotJson.layout;
+            graphLayout['autosize'] = true;
+            graphLayout['responsive'] = true;
+            // graphLayout['width'] = 1200;
+            // graphLayout['height'] = 900;
+            graphLayout['showlegend'] = true;
+            graphLayout['legend'] = { 'orientation': 'v' };
+            // if (plotType == "lyrics") {
+            //     graphLayout['legend'] = false;
+            // }
+            Plotly.newPlot('plotDiv', graphData, graphLayout);
+
+            document.getElementById("plotDiv").on('plotly_click', async function (clickData) {
+                if (currentPlot == 'tags') return;
+                let songID = clickData.points[0].customdata[0];
+                let source = clickData.points[0].customdata[1];
+                if (source == 'suno') {
+                    let link = `https://${source}.com/song/${songID}`;
+                    window.open(link, '_blank');
+                } else if (source == 'udio') {
+                    let link = `https://${source}.com/songs/${songID}`;
+                    window.open(link, '_blank');
+                } else {
+                    alert("error with link", clickData);
+                }
+                // Show infoDiv when a point is clicked
+                const infoDiv = document.getElementById('infoDiv');
+                infoDiv.style.display = 'block';
+                // populate infoDiv if cluster selection dropdown exists
+                const clusterSelect = document.getElementById('clusterSelect');
+                if (clusterSelect) {
+                    clusterSelect.value = clickData.points[0].customdata[2] || clusterSelect.value;
+                }
+            });
+        }
 
 
 
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-            crossorigin="anonymous"></script>
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
